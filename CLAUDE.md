@@ -42,4 +42,5 @@ Guidance for Claude Code when working in this repository. Project background: [S
 
 ## Tooling status
 - Ruff and pytest are set up (step 0.3). Use `make lint`, `make format`, `make test`, `make setup`. Run `make lint` and `make test` after code changes. Strict Mypy and pre-commit are deferred.
-- CI is introduced gradually and only after the owner has configured the GitHub remote.
+- CI is introduced gradually. Stage 1 (Python lint and test on Linux) is written in `.github/workflows/ci.yml` (step 0.5) but has **not run yet**: it needs the owner's push, and Linux installation is still unverified. Later stages arrive with their components (backend and Docker in Phase 5, frontend in Phase 6, end-to-end in Phase 11).
+- The GitHub remote exists (`origin`). Do not push, or change anything on GitHub, unless the owner asks.

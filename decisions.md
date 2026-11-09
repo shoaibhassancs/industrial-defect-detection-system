@@ -215,9 +215,44 @@ A chronological record of every decision and significant action in this project,
 - **Checks:** `make lint` passes; `make test` 5 passed. `PLAN.md` was **not** edited; assumption A16 (safetensors can represent the model state) is now verified for this stack and should be updated there with the owner's approval.
 
 ### 033 — Git initialised, first local commit; GitHub push blocked
-- **Date:** 2026-11-10 · **Type:** Action · **Status:** Partly done
+- **Date:** 2026-11-10 · **Type:** Action · **Status:** Superseded in part by entry 034 (the commit hash, file count, and the "no remote exists" statement below are out of date)
 - **What:** On the owner's explicit request, ran `git init -b main` and made one commit (`58318ae`, 16 files). `project-notes/`, `data/`, `.venv/` and caches are ignored and were not committed. Tried `gh repo create industrial-defect-detection-system --private`; it failed because `gh` is not logged in.
 - **Still to do:** owner runs `gh auth login`, then the private repo (same name as the folder) is created and pushed. **[Unverified]** until then: no remote exists.
+
+### 034 — Correction: actual Git state (commit amended, remote exists and is in sync)
+- **Date:** 2026-11-10 · **Type:** Finding (correction of entry 033) · **Where:** repository · **Status:** Final
+- **Verified facts (read-only checks on 2026-11-10; Claude ran no git write commands):**
+  - The reflog shows the first commit `58318ae` was **amended by the owner** into `f9fad09` ("Initial commit: Phase 0 environment setup and Phase 0F step F2"). The commit has **15 files**, not 16. I did not find out which file differs.
+  - The tracked files include no dataset, no `project-notes/`, no `.venv/`, and no model weight files. The largest tracked file is `uv.lock` (164 KB).
+  - A remote `origin` exists: `https://github.com/shoaibhassancs/industrial-defect-detection-system.git`. `git ls-remote origin` returned `f9fad09…` for `HEAD` and `refs/heads/main`, the same commit as the local `main`, which tracks `origin/main`. The remote and the push were done by the owner outside this session, not by Claude.
+- **Privacy of the GitHub repository:** **not confirmed.** An unauthenticated request to `https://api.github.com/repos/shoaibhassancs/industrial-defect-detection-system` returned HTTP 404. That is what GitHub returns for a private repository to someone who is not signed in, so it is consistent with "private", but it would also be the answer for a repository that does not exist. Since `git ls-remote` found the repository with the owner's stored credentials, the "does not exist" reading is ruled out. Still, the owner should confirm it on GitHub (see the step 0.5 report).
+- **Supersedes:** the commit hash, file count and "no remote exists" parts of entry 033.
+
+### 035 — Step 0.5 CI stage 1: workflow written, not yet run
+- **Date:** 2026-11-10 · **Type:** Action + Finding · **Where:** Phase 0 step 0.5 · **Status:** Written; **not verified on GitHub** (needs the owner's push)
+- **What:** Created `.github/workflows/ci.yml`. On pushes to `main`, pull requests, and manual runs it checks out the code, installs uv, runs `uv sync --all-packages`, then `make lint` and `make test` on `ubuntu-latest` (x86_64, like Render). Details: `UV_LOCKED=1` so a stale `uv.lock` fails the run; uv pinned to 0.13.6 (same as the development Mac); Python 3.12 comes from `.python-version`; uv cache kept with `prune-cache: false`; read-only token permissions; newer pushes cancel older runs; 45-minute timeout; two disk-space printouts and a torch version printout to help diagnose the download concern below.
+- **Actions pinned to commit hashes:** `actions/checkout` v7.0.1 (`3d3c42e5…`) and `astral-sh/setup-uv` v10.3.3 (`68559e99…`). The latest versions and the commits behind their tags were read from the GitHub API on 2026-11-10, and the inputs used (`version`, `enable-cache`, `cache-dependency-glob`, `prune-cache`, `persist-credentials`) were checked in each action's `action.yml` at those commits.
+- **Checks done:** the workflow YAML parses and has the expected structure (job, steps, triggers, pinned `uses`). `make lint` still passes. **Not done:** the workflow has not run anywhere. No linter for workflows (`actionlint`) is installed, so GitHub may still reject something. Nothing was pushed.
+- **Dependency and download concern (from `uv.lock`, not measured):** the lock resolves torch for Linux from PyPI. For x86_64 Linux it lists 19 NVIDIA/CUDA-related packages (plus `triton`) whose largest wheels sum to about **2.45 GB**, and a torch wheel of about **539 MB**. So the first Linux install may download roughly **3 GB** and unpack to more. The Mac gets none of these. `uv sync` has no `--torch-backend` option in uv 0.13.6 (checked with `--help`), so this cannot be fixed inside the workflow alone. The runner's free disk space is unknown **[Unverified]**; the workflow prints it. If the run is too slow or runs out of space, the fix is a Linux-only CPU torch index in `pyproject.toml` plus `uv lock` (planned for the Docker build in Phase 5 anyway). That changes dependency configuration, so it needs the owner's approval first.
+- **Still unverified:** that dependencies install on Linux at all (assumption A11), that the 5 tests pass there, and the real size and time of the install.
+- **Files created:** `.github/workflows/ci.yml`. **Modified:** `decisions.md`, `project-notes/PLAN.md` (step 0.5 row, assumption A11, new §15 item 15), `CLAUDE.md` (Tooling status), `project-notes/each-step-notes.md`.
+- **`.gitignore`:** no change needed.
+
+### 036 — Local verification of the CI workflow (what could and could not be checked)
+- **Date:** 2026-11-10 · **Type:** Action + Finding · **Where:** Phase 0 step 0.5 · **Status:** Local checks done; **the workflow has not run on GitHub**
+- **PASS (local, 2026-11-10):**
+  - YAML structure (triggers, `contents: read`, `UV_LOCKED=1`, `ubuntu-latest`, 45-minute timeout, the expected commands).
+  - Validation against the SchemaStore `github-workflow` JSON schema (Draft 7): 0 errors. A first attempt reported 2 errors that came from PyYAML reading the bare key `on` as `True` (a YAML 1.1 quirk, not a workflow problem); the re-run with the key restored passed. A deliberately broken copy was rejected, so the validator does catch mistakes. `actionlint` is not installed and was not used.
+  - Both pinned action hashes still equal their release tags on GitHub.
+  - `make lint` and `make test` targets exist and pass with `UV_LOCKED=1`: lint all passed; 5 tests passed in 7.7 s.
+  - `uv sync --all-packages --offline --dry-run` with `UV_LOCKED=1`: lock matches `pyproject.toml`; "would make no changes".
+  - The workflow's version printout command runs on the Mac (Python 3.12.16, torch 2.15.0, CUDA build None, anomalib 2.7.0).
+  - The local uv version (0.13.6) equals the version pinned in the workflow.
+- **NOT RUN:** a real Linux install (not attempted: wrong CPU type for Linux x86_64 wheels, and about 3 GB of downloads), and the workflow itself.
+- **Estimate (from `uv.lock` only; no download):** walking the lock's dependency graph with Linux x86_64 markers gives **99 packages** and about **3.25 GB** of wheels, of which 19 NVIDIA/CUDA-related packages plus `triton` are 2.45 GB; `freia` is source-only and would be built on the runner. This refines the earlier rough figure (entry 035) and is consistent with it. The runner's free disk space is still unknown.
+- **Free disk on the Mac before and during the checks:** 16 GiB.
+- **Only a run on GitHub can show:** that the workflow is accepted, that Python 3.12 and the dependencies install on the runner, the real download size and time, whether the disk is enough, and that the 5 tests pass on Linux.
+- **Files changed:** `decisions.md` only. Scratch files (schema copy, estimate script) are in the Claude scratchpad, outside the project. No commit or push was made.
 
 ---
 

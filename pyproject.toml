@@ -1,0 +1,25 @@
+# Root of the uv workspace (virtual root: no project of its own).
+# Members are added only when they are first needed: core/ now, ml/ in Phase 1 or 2, backend/ in Phase 5.
+[tool.uv.workspace]
+members = ["core"]
+
+# Development-only tools (not part of the application).
+[dependency-groups]
+dev = [
+    "ruff",
+    "pytest",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+extend-exclude = [".venv"]
+
+[tool.ruff.lint]
+# E/W: pycodestyle errors and warnings, F: pyflakes (unused/undefined names),
+# I: import sorting, UP: modernise syntax, B: likely bugs.
+select = ["E", "W", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["core/tests"]
+addopts = "-ra"

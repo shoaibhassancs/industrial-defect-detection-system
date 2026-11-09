@@ -1,0 +1,286 @@
+{
+  "step": "Phase 0F F2: save and reload verification",
+  "label": "SYNTHETIC: random weights and random images. Says nothing about detection quality, real-data memory, or Render.",
+  "date_utc": "2026-11-09T23:00:30+00:00",
+  "environment": {
+    "platform": "macOS-15.2-arm64-arm-64bit",
+    "python": "3.12.16",
+    "torch": "2.15.0",
+    "anomalib": "2.7.0",
+    "safetensors": "0.8.0",
+    "numpy": "2.5.4",
+    "torch_threads": 4,
+    "swap_before": "vm.swapusage: total = 1024.00M  used = 749.56M  free = 274.44M  (encrypted)",
+    "power": [
+      "Now drawing from 'Battery Power'"
+    ],
+    "swap_after": "vm.swapusage: total = 2048.00M  used = 1455.81M  free = 592.19M  (encrypted)"
+  },
+  "settings": {
+    "layers": [
+      "layer2",
+      "layer3"
+    ],
+    "num_neighbors": 9,
+    "coreset_ratio": 0.1,
+    "image_size": 256,
+    "fit_images": 8,
+    "test_images": 4
+  },
+  "backbones": {
+    "resnet18": {
+      "backbone": "resnet18",
+      "num_state_tensors": 92,
+      "bytes_by_group": {
+        "backbone_params": 11131136,
+        "backbone_bn_buffers": 18040,
+        "memory_bank": 1257984,
+        "blur_kernel": 4356
+      },
+      "memory_bank_shape": [
+        819,
+        384
+      ],
+      "memory_bank_dtype": "torch.float32",
+      "batch_norm_buffers_changed_by_fit_pass": false,
+      "file_sizes_bytes": {
+        "safetensors": 12422836,
+        "state_dict_pt": 12447861,
+        "full_module_pt": 12458841
+      },
+      "reference_scores": [
+        0.21357519924640656,
+        0.2072823941707611,
+        0.2104843109846115,
+        0.20707538723945618
+      ],
+      "verify": {
+        "safetensors": {
+          "format": "safetensors",
+          "backbone": "resnet18",
+          "pid": 7906,
+          "load_seconds": 0.0038,
+          "naive_strict_load_state_dict": {
+            "ok": true,
+            "scores_identical": true,
+            "maps_identical": true,
+            "max_abs_score_diff": 0.0,
+            "max_abs_map_diff": 0.0
+          },
+          "proper_reload": {
+            "ok": true,
+            "missing_keys": [
+              "memory_bank"
+            ],
+            "unexpected_keys": [],
+            "scores_identical": true,
+            "maps_identical": true,
+            "max_abs_score_diff": 0.0,
+            "max_abs_map_diff": 0.0
+          },
+          "subset_without_blur_kernel": {
+            "ok": true,
+            "missing_keys": [
+              "memory_bank",
+              "anomaly_map_generator.blur.kernel"
+            ],
+            "scores_identical": true,
+            "maps_identical": true,
+            "max_abs_score_diff": 0.0,
+            "max_abs_map_diff": 0.0
+          },
+          "subset_without_batch_norm_buffers": {
+            "ok": true,
+            "missing_keys_count": 31,
+            "scores_identical": false,
+            "maps_identical": false,
+            "max_abs_score_diff": 0.8527218103408813,
+            "max_abs_map_diff": 0.9906425476074219
+          },
+          "bank_only_into_fresh_random_model": {
+            "ok": true,
+            "scores_identical": false,
+            "maps_identical": false,
+            "max_abs_score_diff": 1.801418423652649,
+            "max_abs_map_diff": 2.034471273422241
+          },
+          "weights_without_bank": {
+            "ok": false,
+            "error_type": "ValueError",
+            "error": "Memory bank is empty. Cannot provide anomaly scores"
+          }
+        },
+        "state_dict_pt": {
+          "format": "state_dict_pt",
+          "backbone": "resnet18",
+          "pid": 7945,
+          "load_seconds": 0.0213,
+          "torch_load_weights_only": true,
+          "naive_strict_load_state_dict": {
+            "ok": true,
+            "scores_identical": true,
+            "maps_identical": true,
+            "max_abs_score_diff": 0.0,
+            "max_abs_map_diff": 0.0
+          },
+          "proper_reload": {
+            "ok": true,
+            "missing_keys": [
+              "memory_bank"
+            ],
+            "unexpected_keys": [],
+            "scores_identical": true,
+            "maps_identical": true,
+            "max_abs_score_diff": 0.0,
+            "max_abs_map_diff": 0.0
+          }
+        },
+        "full_module_pt": {
+          "format": "full_module_pt",
+          "backbone": "resnet18",
+          "pid": 7999,
+          "load_with_weights_only_true": {
+            "ok": false,
+            "error_type": "UnpicklingError",
+            "error": "Weights only load failed. This file can still be loaded, to do so you have two options, \u001b[1mdo those steps only if you trust the source of the checkpoint\u001b[0m. "
+          },
+          "load_seconds": 3.2667,
+          "load_with_weights_only_false": {
+            "ok": true,
+            "scores_identical": true,
+            "maps_identical": true,
+            "max_abs_score_diff": 0.0,
+            "max_abs_map_diff": 0.0
+          }
+        }
+      }
+    },
+    "wide_resnet50_2": {
+      "backbone": "wide_resnet50_2",
+      "num_state_tensors": 260,
+      "bytes_by_group": {
+        "backbone_params": 99450112,
+        "backbone_bn_buffers": 158552,
+        "memory_bank": 5031936,
+        "blur_kernel": 4356
+      },
+      "memory_bank_shape": [
+        819,
+        1536
+      ],
+      "memory_bank_dtype": "torch.float32",
+      "batch_norm_buffers_changed_by_fit_pass": false,
+      "file_sizes_bytes": {
+        "safetensors": 104677524,
+        "state_dict_pt": 104745301,
+        "full_module_pt": 104764387
+      },
+      "reference_scores": [
+        0.2311527281999588,
+        0.23966573178768158,
+        0.22809380292892456,
+        0.23170867562294006
+      ],
+      "verify": {
+        "safetensors": {
+          "format": "safetensors",
+          "backbone": "wide_resnet50_2",
+          "pid": 8068,
+          "load_seconds": 0.0089,
+          "naive_strict_load_state_dict": {
+            "ok": true,
+            "scores_identical": true,
+            "maps_identical": true,
+            "max_abs_score_diff": 0.0,
+            "max_abs_map_diff": 0.0
+          },
+          "proper_reload": {
+            "ok": true,
+            "missing_keys": [
+              "memory_bank"
+            ],
+            "unexpected_keys": [],
+            "scores_identical": true,
+            "maps_identical": true,
+            "max_abs_score_diff": 0.0,
+            "max_abs_map_diff": 0.0
+          },
+          "subset_without_blur_kernel": {
+            "ok": true,
+            "missing_keys": [
+              "memory_bank",
+              "anomaly_map_generator.blur.kernel"
+            ],
+            "scores_identical": true,
+            "maps_identical": true,
+            "max_abs_score_diff": 0.0,
+            "max_abs_map_diff": 0.0
+          },
+          "subset_without_batch_norm_buffers": {
+            "ok": true,
+            "missing_keys_count": 87,
+            "scores_identical": false,
+            "maps_identical": false,
+            "max_abs_score_diff": 1.413710117340088,
+            "max_abs_map_diff": 1.6041560173034668
+          },
+          "bank_only_into_fresh_random_model": {
+            "ok": true,
+            "scores_identical": false,
+            "maps_identical": false,
+            "max_abs_score_diff": 1.9756629467010498,
+            "max_abs_map_diff": 2.2050256729125977
+          },
+          "weights_without_bank": {
+            "ok": false,
+            "error_type": "ValueError",
+            "error": "Memory bank is empty. Cannot provide anomaly scores"
+          }
+        },
+        "state_dict_pt": {
+          "format": "state_dict_pt",
+          "backbone": "wide_resnet50_2",
+          "pid": 8153,
+          "load_seconds": 0.0404,
+          "torch_load_weights_only": true,
+          "naive_strict_load_state_dict": {
+            "ok": true,
+            "scores_identical": true,
+            "maps_identical": true,
+            "max_abs_score_diff": 0.0,
+            "max_abs_map_diff": 0.0
+          },
+          "proper_reload": {
+            "ok": true,
+            "missing_keys": [
+              "memory_bank"
+            ],
+            "unexpected_keys": [],
+            "scores_identical": true,
+            "maps_identical": true,
+            "max_abs_score_diff": 0.0,
+            "max_abs_map_diff": 0.0
+          }
+        },
+        "full_module_pt": {
+          "format": "full_module_pt",
+          "backbone": "wide_resnet50_2",
+          "pid": 8186,
+          "load_with_weights_only_true": {
+            "ok": false,
+            "error_type": "UnpicklingError",
+            "error": "Weights only load failed. This file can still be loaded, to do so you have two options, \u001b[1mdo those steps only if you trust the source of the checkpoint\u001b[0m. "
+          },
+          "load_seconds": 2.8885,
+          "load_with_weights_only_false": {
+            "ok": true,
+            "scores_identical": true,
+            "maps_identical": true,
+            "max_abs_score_diff": 0.0,
+            "max_abs_map_diff": 0.0
+          }
+        }
+      }
+    }
+  }
+}

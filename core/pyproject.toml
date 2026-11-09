@@ -1,0 +1,16 @@
+[project]
+name = "defect-core"
+version = "0.0.0"
+description = "Shared logic for DefectLens: preprocessing, PatchCore model wrapper, calibration, rendering."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    # anomalib does not install torch by default; the "cpu" extra pulls in torch and torchvision.
+    "anomalib[cpu]>=2.7.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/defect_core"]

@@ -1,0 +1,58 @@
+# .gitignore for DefectLens.
+# Claude updates this file whenever a new file or folder should stay out of git (see CLAUDE.md).
+# NOTE: uv.lock, pyproject.toml, .python-version, CLAUDE.md, SCOPE.md and decisions.md are deliberately NOT ignored.
+
+# ---- Project notes (kept out of git by owner's request) -------------------
+# Contains PLAN.md, project_specifications.md, and later ADRs and the experiment log.
+project-notes/
+
+# ---- Dataset, models, and generated artifacts -----------------------------
+# MVTec AD dataset (never committed)
+data/
+# Frozen model artifacts before upload
+artifacts/
+# Local dev image storage (Release 2)
+storage/
+# Model weight files
+*.safetensors
+*.pt
+*.pth
+*.ckpt
+*.onnx
+# anomalib default output directory and logger output
+results/
+lightning_logs/
+wandb/
+mlruns/
+
+# ---- Python ---------------------------------------------------------------
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# ---- Secrets and local configuration ---------------------------------------
+.env
+.env.*
+!.env.example
+
+# ---- Frontend (added now so it is ready for Phase 6) ----------------------
+node_modules/
+frontend/dist/
+
+# ---- Editor, OS, and local tool files --------------------------------------
+.DS_Store
+.vscode/
+*.code-workspace
+.claude/settings.local.json
+
+# ---- Logs ------------------------------------------------------------------
+*.log

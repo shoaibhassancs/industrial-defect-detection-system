@@ -279,6 +279,7 @@ dependencies = [
     { name = "anomalib", extra = ["cpu"] },
     { name = "numpy" },
     { name = "pillow" },
+    { name = "safetensors" },
     { name = "torch" },
     { name = "torchvision" },
 ]
@@ -288,6 +289,7 @@ requires-dist = [
     { name = "anomalib", extras = ["cpu"], specifier = ">=2.7.0" },
     { name = "numpy" },
     { name = "pillow" },
+    { name = "safetensors" },
     { name = "torch" },
     { name = "torchvision" },
 ]

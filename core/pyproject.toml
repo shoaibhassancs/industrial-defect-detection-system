@@ -6,12 +6,13 @@ requires-python = ">=3.12,<3.13"
 dependencies = [
     # anomalib does not install torch by default; the "cpu" extra pulls in torch and torchvision.
     "anomalib[cpu]>=2.7.0",
-    # Imported directly by defect_core's own code (preprocessing.py, model.py). Declared here, not left to
+    # Imported directly by defect_core's own code (preprocessing.py, model.py, artifacts.py). Declared here, not left to
     # arrive through anomalib. The exact versions are pinned by uv.lock.
     "numpy",
     "torch",
     "torchvision",
     "pillow",
+    "safetensors",
 ]
 
 [build-system]

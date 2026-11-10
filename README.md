@@ -17,6 +17,10 @@ The model is **PatchCore** (PyTorch, via the anomalib library), fitted only on d
 - A fixed 80/20 split of the `bottle` training images into a "fit" group and a "calibration" group (`scripts/data/make_splits.py`, `splits/bottle.json`). It lists file names only.
 - A train-only look at those images (`scripts/data/eda_train.py`): simple brightness, colour and sharpness numbers, comparing the fit and calibration groups (a rough check, not a proof). It reads training images only.
 - Shared image preprocessing (`core/src/defect_core/preprocessing.py`) with tests on synthetic images. The PatchCore wrapper (`model.py`: build, fit, score) with tests on random data.
+- Rendering of results (`render.py`: fixed-scale inferno heatmap, overlay with outline, largest highlighted region, area fraction), tested with synthetic arrays.
+- The calibration arithmetic (`calibration.py`: conformal threshold, strict verdict rule, normal rank, heatmap levels), tested with synthetic numbers.
+- A resource measurement of fitting and scoring on this Mac with random data (`scripts/feasibility/f1_resources.py`).
+- Saving and loading a fitted model (`artifacts.py`: safetensors weights plus a checked `manifest.json`), tested with random data.
 - Data notes and licensing: [docs/data.md](docs/data.md) and [DATA_LICENSE.md](DATA_LICENSE.md).
 
 Nothing else yet. The roadmap is private for now.

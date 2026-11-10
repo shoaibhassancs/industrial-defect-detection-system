@@ -1,0 +1,172 @@
+{
+  "step": "Phase 0F F1: resource measurement",
+  "label": "SYNTHETIC: random weights and random images, CPU. Says nothing about detection quality or real-data memory, and selects no backbone or hosting plan.",
+  "exit_code": 0,
+  "stopped_by_guard": false,
+  "guard_limits": {
+    "max_swap_used_mb": 5000.0,
+    "min_free_disk_gib": 7.0
+  },
+  "wall_time_s_whole_process": 338.5,
+  "settings": {
+    "layers": [
+      "layer2",
+      "layer3"
+    ],
+    "coreset_ratio": 0.1,
+    "image_size": 256,
+    "fit_images": 167,
+    "batch_size": 4,
+    "single_image_timings": 30,
+    "warmup_inferences": 3,
+    "seed": 0
+  },
+  "environment": {
+    "platform": "macOS-15.2-arm64-arm-64bit",
+    "python": "3.12.16",
+    "torch": "2.15.0",
+    "anomalib": "2.7.0",
+    "numpy": "2.5.4",
+    "requested_torch_threads": 4
+  },
+  "system_before": {
+    "time_utc": "2026-11-10T01:41:18+00:00",
+    "swap_used_mb": 2059.69,
+    "swap_usage_raw": "total = 3072.00M  used = 2059.69M  free = 1012.31M  (encrypted)",
+    "free_disk_gib": 12.87,
+    "load_average": [
+      2.18,
+      3.02,
+      2.84
+    ],
+    "memory_free_percentage": "System-wide memory free percentage: 49%",
+    "power": [
+      "Now drawing from 'AC Power'",
+      " -InternalBattery-0 (id=21102691)\t24%; charging; 2:41 remaining present: true"
+    ],
+    "thermal": [
+      "Note: No thermal warning level has been recorded",
+      "Note: No performance warning level has been recorded",
+      "Note: No CPU power status has been recorded"
+    ],
+    "vm_counters": {
+      "Pageins": 6863117,
+      "Pageouts": 209528,
+      "Swapins": 305093,
+      "Swapouts": 487611
+    }
+  },
+  "system_after": {
+    "time_utc": "2026-11-10T01:46:57+00:00",
+    "swap_used_mb": 2142.5,
+    "swap_usage_raw": "total = 3072.00M  used = 2142.50M  free = 929.50M  (encrypted)",
+    "free_disk_gib": 12.87,
+    "load_average": [
+      4.4,
+      3.96,
+      3.35
+    ],
+    "memory_free_percentage": "System-wide memory free percentage: 37%",
+    "power": [
+      "Now drawing from 'AC Power'",
+      " -InternalBattery-0 (id=21102691)\t25%; charging; 3:31 remaining present: true"
+    ],
+    "thermal": [
+      "Note: No thermal warning level has been recorded",
+      "Note: No performance warning level has been recorded",
+      "Note: No CPU power status has been recorded"
+    ],
+    "vm_counters": {
+      "Pageins": 6928123,
+      "Pageouts": 209935,
+      "Swapins": 307095,
+      "Swapouts": 494959
+    }
+  },
+  "limitations": [
+    "Timings include any slowdown from other apps and from swapping; see system_before/system_after and the watchdog extremes.",
+    "Peak RSS (ru_maxrss) counts resident memory only; memory the OS compressed or swapped out is not included, so under memory pressure it can understate demand.",
+    "The Mac has no fan; long runs may be heat-throttled (thermal notes recorded).",
+    "Random weights and noise images; real data may differ ([Unverified]).",
+    "Not a Render measurement: different CPU, memory limit and Linux."
+  ],
+  "measurement": {
+    "backbone": "resnet18",
+    "process_pid": 51813,
+    "torch_threads": 4,
+    "stages": {
+      "process_start_after_torch_import": {
+        "elapsed_s": 0.01,
+        "rss_now_mb": 190.4,
+        "rss_peak_mb": 190.4
+      },
+      "after_defect_core_import": {
+        "elapsed_s": 3.32,
+        "rss_now_mb": 509.1,
+        "rss_peak_mb": 509.1
+      },
+      "after_build": {
+        "elapsed_s": 3.63,
+        "rss_now_mb": 555.4,
+        "rss_peak_mb": 555.4,
+        "parameters": 2782784
+      },
+      "after_features": {
+        "elapsed_s": 7.55,
+        "rss_now_mb": 896.1,
+        "rss_peak_mb": 896.1,
+        "seconds": 3.91,
+        "patch_features": 171008,
+        "feature_width": 384,
+        "embedding_store_mb": 250.5
+      },
+      "after_coreset": {
+        "elapsed_s": 332.56,
+        "rss_now_mb": 104.0,
+        "rss_peak_mb": 996.0,
+        "seconds": 324.99,
+        "memory_bank_shape": [
+          17100,
+          384
+        ],
+        "memory_bank_dtype": "torch.float32",
+        "memory_bank_mb": 25.0
+      },
+      "after_inference": {
+        "elapsed_s": 335.4,
+        "rss_now_mb": 276.3,
+        "rss_peak_mb": 996.0,
+        "latency": {
+          "images": 30,
+          "p50_ms": 84.0,
+          "p95_ms": 92.4,
+          "min_ms": 80.1,
+          "max_ms": 95.5
+        }
+      },
+      "after_save": {
+        "elapsed_s": 335.48,
+        "rss_now_mb": 281.8,
+        "rss_peak_mb": 996.0,
+        "seconds": 0.07,
+        "file_bytes": {
+          "model.safetensors": 37425984,
+          "manifest.json": 14475
+        }
+      },
+      "after_reload": {
+        "elapsed_s": 337.07,
+        "rss_now_mb": 277.8,
+        "rss_peak_mb": 1347.6,
+        "seconds": 0.37,
+        "reload_outputs_bit_identical": true
+      }
+    },
+    "fit_total_s": 328.89,
+    "peak_rss_mb_whole_run": 1347.6,
+    "watchdog": {
+      "max_swap_used_mb_seen": 2059.7,
+      "min_free_disk_gib_seen": 12.84
+    }
+  }
+}

@@ -1,0 +1,74 @@
+{
+ "step": "Phase 4: package a calibrated, evaluated artifact (no upload)",
+ "status": "packaged locally; NOT uploaded; no test image or mask opened",
+ "run_name": "bottle_wide_resnet50_2_tv_in1k_fit-v0",
+ "version": "1.0.0",
+ "source_artifact": "artifacts/bottle_wide_resnet50_2_tv_in1k_v1.0.0",
+ "package": "artifacts/bottle_wide_resnet50_2_tv_in1k_v1.0.0_release",
+ "weights_sha256": "465f83449447ad9df33eb28b09a3372fb2000a96055ebc71fea7b2dafa5b0b7c",
+ "weights_identical_to_calibrated": true,
+ "package_manifest_sha256": "f072b2709f55acd61456841dd105f168378a286491be394c973b4eacf935257b",
+ "notice_sha256": "faad5f235189214da2b60b22d9386c517ac17239b1e8334312165bb37e95e482",
+ "files_bytes": {
+  "NOTICE.md": 2852,
+  "manifest.json": 48019,
+  "model.safetensors": 204703520
+ },
+ "evaluation_record_sha256": "db291e93c4442e47205c0a37c433491a9922de55c162c314cef0b8bc1716db9e",
+ "parity_on_calib_images": {
+  "n": 42,
+  "sorted_scores_equal_stored_calibration_scores": true,
+  "only_listed_calib_files_opened": true,
+  "files_opened_inside_dataset_folder": 42,
+  "test_set_opened": false
+ },
+ "git": {
+  "commit": "815d024ecc2ee3babc3c10a4caf051777166f3fb",
+  "uncommitted_changes": true
+ },
+ "system_before": {
+  "time_utc": "2026-11-10T05:08:16+00:00",
+  "swap_used_mb": 2396.69,
+  "free_disk_gib": 9.95,
+  "load_average": [
+   3.47,
+   2.88,
+   2.47
+  ],
+  "memory_free_percentage": "System-wide memory free percentage: 32%",
+  "power": [
+   "Now drawing from 'AC Power'",
+   " -InternalBattery-0 (id=21102691)\t100%; charged; 0:00 remaining present: true"
+  ],
+  "thermal": [
+   "Note: No thermal warning level has been recorded",
+   "Note: No performance warning level has been recorded",
+   "Note: No CPU power status has been recorded"
+  ]
+ },
+ "system_after": {
+  "time_utc": "2026-11-10T05:08:33+00:00",
+  "swap_used_mb": 2664.31,
+  "free_disk_gib": 9.76,
+  "load_average": [
+   3.76,
+   2.97,
+   2.51
+  ],
+  "memory_free_percentage": "System-wide memory free percentage: 33%",
+  "power": [
+   "Now drawing from 'AC Power'",
+   " -InternalBattery-0 (id=21102691)\t100%; charged; 0:00 remaining present: true"
+  ],
+  "thermal": [
+   "Note: No thermal warning level has been recorded",
+   "Note: No performance warning level has been recorded",
+   "Note: No CPU power status has been recorded"
+  ]
+ },
+ "limitations": [
+  "Not uploaded: the artifact store is an open owner decision (O3).",
+  "Parity is on the 42 calibration images, not on the test images (those would reopen the sealed test set).",
+  "The notice describes the project's cautious policy; it is not a legal finding."
+ ]
+}

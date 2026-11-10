@@ -47,6 +47,7 @@ On Linux, a GitHub Actions run (Ubuntu, x86_64, 2026-11-09, commit `90624b0`) in
 - [docs/dev-environment.md](docs/dev-environment.md): machine, tools, and library versions.
 - [docs/adr/ADR-0002-model-and-serving.md](docs/adr/ADR-0002-model-and-serving.md): Checkpoint A, the rule that names the headline model and the frozen calibration settings.
 - [docs/data.md](docs/data.md): the dataset, its layout, citation, and what has been checked.
+- [evaluation/NOTICE.md](evaluation/NOTICE.md): dataset attribution and license terms for the figures (adapted MVTec AD images).
 - [docs/evaluation.md](docs/evaluation.md): how the models were evaluated and what the saved results show, including the false alarms and the limits.
 - [docs/model-card.md](docs/model-card.md): short model card (intended use, limits, results).
 - [DATA_LICENSE.md](DATA_LICENSE.md): dataset license and attribution, and what is and is not redistributed.

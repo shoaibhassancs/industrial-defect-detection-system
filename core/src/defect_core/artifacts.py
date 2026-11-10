@@ -16,7 +16,10 @@ Stages (Phase 3 steps 2-3). A fitted artifact has no ``stage`` key. ``freeze_art
 it to a new folder with ``stage: "frozen"`` and a ``freeze`` block (version, the settings fixed
 in advance, and the hash of the weights it came from). ``calibrate_artifact`` copies a frozen
 artifact to another new folder with ``stage: "calibrated"`` and a ``calibration`` block. No stage
-changes the weights, and no stage overwrites an earlier one. ``load_artifact`` checks the stage
+changes the weights, and no stage overwrites an earlier one. ``package_artifact`` (Phase 4) copies a
+calibrated artifact to a third folder with ``stage: "packaged"``, a ``package`` block (version,
+the evaluation summary and the hash of the evaluation record it came from, data hashes, git state,
+creation time) and a ``NOTICE.md`` whose hash the block records. ``load_artifact`` checks the stage
 fields (see ``_check_stage``).
 
 Loading checks, in this order: the manifest is well formed; the preprocessing version is the one
@@ -57,6 +60,8 @@ _REBUILT_KEYS = ("anomaly_map_generator.blur.kernel",)  # rebuilt by anomalib, n
 
 STAGE_FROZEN = "frozen"
 STAGE_CALIBRATED = "calibrated"
+STAGE_PACKAGED = "packaged"
+NOTICE_FILE = "NOTICE.md"
 SETTING_KEYS = ("alpha", "lower_percentile", "highlight_percentile", "upper_multiple")
 
 
@@ -313,7 +318,7 @@ def load_artifact(directory: str | Path) -> LoadedArtifact:
     )
 
     # 5. the stage fields (frozen / calibrated) must be consistent with the weights and each other
-    calibration = _check_stage(manifest, entry["sha256"])
+    calibration = _check_stage(manifest, entry["sha256"], directory)
     return LoadedArtifact(model.eval(), model_config, preprocess_config, manifest, calibration)
 
 
@@ -342,7 +347,9 @@ def _settings_ok(settings: object) -> bool:
     )
 
 
-def _check_stage(manifest: dict[str, object], weights_sha256: str) -> Calibration | None:
+def _check_stage(
+    manifest: dict[str, object], weights_sha256: str, directory: Path | None = None
+) -> Calibration | None:
     """Check the ``stage``, ``freeze`` and ``calibration`` fields; return the calibration if any.
 
     A calibration block that does not match the weights it sits next to, the settings fixed at
@@ -355,7 +362,10 @@ def _check_stage(manifest: dict[str, object], weights_sha256: str) -> Calibratio
     if stage is None:
         _require(not has_freeze and not has_calibration, "Manifest has stage data but no 'stage'")
         return None
-    _require(stage in (STAGE_FROZEN, STAGE_CALIBRATED), f"Unknown artifact stage {stage!r}")
+    _require(
+        stage in (STAGE_FROZEN, STAGE_CALIBRATED, STAGE_PACKAGED),
+        f"Unknown artifact stage {stage!r}",
+    )
 
     freeze = manifest.get("freeze")
     _require(isinstance(freeze, dict), "A frozen artifact needs a 'freeze' block")
@@ -372,7 +382,12 @@ def _check_stage(manifest: dict[str, object], weights_sha256: str) -> Calibratio
 
     if stage == STAGE_FROZEN:
         _require(not has_calibration, "A frozen (not calibrated) artifact has a calibration block")
+        _require("package" not in manifest, "A frozen artifact has a package block")
         return None
+    _require(
+        ("package" in manifest) == (stage == STAGE_PACKAGED),
+        "The 'package' block must be present exactly for a packaged artifact",
+    )
 
     entry = manifest.get("calibration")
     _require(isinstance(entry, dict), "A calibrated artifact needs a 'calibration' block")
@@ -412,7 +427,50 @@ def _check_stage(manifest: dict[str, object], weights_sha256: str) -> Calibratio
         inputs.get("preprocessing_version") == manifest["preprocessing"].get("version"),  # type: ignore[union-attr]
         "The calibration images were prepared with a different preprocessing version",
     )
+    if stage == STAGE_PACKAGED:
+        _check_package(manifest, freeze, weights_sha256, directory)
     return calibration
+
+
+def _check_package(
+    manifest: dict[str, object], freeze: dict, weights_sha256: str, directory: Path | None
+) -> None:
+    """Check the ``package`` block of a packaged artifact against everything it refers to."""
+    package = manifest["package"]
+    _require(isinstance(package, dict), "The 'package' block is malformed")
+    _require(
+        package.get("version") == freeze["version"],
+        "The package version differs from the frozen version",
+    )
+    _require(
+        package.get("weights_sha256") == weights_sha256,
+        "The package was made for other weights",
+    )
+    _require(
+        isinstance(package.get("calibrated_manifest_sha256"), str),
+        "The package does not name the calibrated manifest it came from",
+    )
+    evaluation = package.get("evaluation")
+    _require(
+        isinstance(evaluation, dict)
+        and isinstance(evaluation.get("metrics_sha256"), str)
+        and isinstance(evaluation.get("results"), dict)
+        and evaluation.get("weights_sha256") == weights_sha256,
+        "The evaluation summary in the package is incomplete or belongs to other weights",
+    )
+    notice = package.get("notice")
+    _require(
+        isinstance(notice, dict) and notice.get("file") == NOTICE_FILE
+        and isinstance(notice.get("sha256"), str),
+        "The package does not record its notice file",
+    )  # fmt: skip
+    if directory is not None:
+        path = directory / NOTICE_FILE
+        _require(path.is_file(), f"{NOTICE_FILE} is missing from the package")
+        _require(
+            _file_sha256(path) == notice["sha256"],
+            f"{NOTICE_FILE} does not match its recorded SHA-256 (file changed)",
+        )
 
 
 def _new_folder(path: Path) -> None:
@@ -503,4 +561,52 @@ def calibrate_artifact(
     _copy_weights(frozen, out, weights_sha256)
     _write_manifest(out, manifest)
     load_artifact(out)
+    return manifest
+
+
+def package_artifact(
+    calibrated_dir: str | Path, out_dir: str | Path, evaluation: dict[str, object],
+    notice_text: str, details: dict[str, object],
+) -> dict[str, object]:  # fmt: skip
+    """Copy a calibrated artifact to a new folder as a packaged artifact. Returns the manifest.
+
+    ``evaluation`` is the summary taken from the finished evaluation: it must hold
+    ``metrics_sha256`` (hash of the evaluation record), ``weights_sha256`` (equal to this artifact's
+    weights), ``calibrated_manifest_sha256`` and ``results``. ``details`` (data hashes, git state,
+    creation time and so on) is recorded as given. The weights and the calibration block are copied
+    unchanged; the calibrated folder is not modified.
+    """
+    source, out = Path(calibrated_dir), Path(out_dir)
+    loaded = load_artifact(source)
+    _require(
+        loaded.manifest.get("stage") == STAGE_CALIBRATED,
+        "Only a calibrated artifact can be packaged",
+    )
+    weights_sha256 = loaded.manifest["files"][MODEL_FILE]["sha256"]  # type: ignore[index]
+    source_manifest_sha256 = _file_sha256(source / MANIFEST_FILE)
+    _require(
+        evaluation.get("weights_sha256") == weights_sha256
+        and evaluation.get("calibrated_manifest_sha256") == source_manifest_sha256,
+        "The evaluation record is not for this exact calibrated artifact",
+    )
+    _require(bool(notice_text.strip()), "A notice text is needed")
+    manifest = copy.deepcopy(loaded.manifest)
+    manifest["stage"] = STAGE_PACKAGED
+    manifest["package"] = {
+        "version": manifest["freeze"]["version"],  # type: ignore[index]
+        "weights_sha256": weights_sha256,
+        "calibrated_manifest_sha256": source_manifest_sha256,
+        "evaluation": evaluation,
+        "notice": {"file": NOTICE_FILE, "sha256": hashlib.sha256(notice_text.encode()).hexdigest()},
+        **details,
+    }
+    _new_folder(out)
+    try:
+        _copy_weights(source, out, weights_sha256)
+        (out / NOTICE_FILE).write_text(notice_text)
+        _write_manifest(out, manifest)
+        load_artifact(out)  # the new folder must load cleanly
+    except Exception:
+        shutil.rmtree(out, ignore_errors=True)  # never leave a half-written package behind
+        raise
     return manifest

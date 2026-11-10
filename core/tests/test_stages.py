@@ -8,6 +8,7 @@ weights, its settings or itself is refused on load.
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 import shutil
 from pathlib import Path
@@ -23,6 +24,7 @@ from defect_core.artifacts import (
     canonical_sha256,
     freeze_artifact,
     load_artifact,
+    package_artifact,
     save_artifact,
 )
 from defect_core.calibration import build_calibration
@@ -288,3 +290,133 @@ def test_calibrated_inputs_must_match_the_stored_scores(calibrated: Path) -> Non
     _edit(calibrated, lambda m: m["calibration"]["inputs"].update(n=3))
     with pytest.raises(ArtifactError, match="calibration inputs"):
         load_artifact(calibrated)
+
+
+# --- packaging (Phase 4) --------------------------------------------------------------------
+
+NOTICE_TEXT = "# Notice\nDataset attribution goes here.\n"
+
+
+def _evaluation_for(calibrated: Path) -> dict:
+    manifest = _read(calibrated)
+    return {
+        "metrics_sha256": "a" * 64,
+        "weights_sha256": manifest["files"][MODEL_FILE]["sha256"],
+        "calibrated_manifest_sha256": hashlib.sha256(
+            (calibrated / MANIFEST_FILE).read_bytes()
+        ).hexdigest(),
+        "results": {"image": {"auroc": 1.0}},
+    }
+
+
+@pytest.fixture
+def packaged(tmp_path: Path, calibrated: Path) -> Path:
+    package_artifact(calibrated, tmp_path / "pkg", _evaluation_for(calibrated), NOTICE_TEXT, {})
+    return tmp_path / "pkg"
+
+
+def test_packaging_copies_weights_and_calibration_unchanged_and_adds_the_notice(
+    tmp_path: Path, calibrated: Path
+) -> None:
+    before = {p.name: p.read_bytes() for p in calibrated.iterdir()}
+    details = {"created_utc": "2026-11-10T00:00:00Z", "model_name": "demo"}
+    manifest = package_artifact(
+        calibrated, tmp_path / "pkg", _evaluation_for(calibrated), NOTICE_TEXT, details
+    )
+    assert {p.name: p.read_bytes() for p in calibrated.iterdir()} == before
+    pkg = tmp_path / "pkg"
+    assert (pkg / MODEL_FILE).read_bytes() == (calibrated / MODEL_FILE).read_bytes()
+    assert (pkg / "NOTICE.md").read_text() == NOTICE_TEXT
+    loaded = load_artifact(pkg)
+    assert loaded.manifest["stage"] == "packaged" and loaded.calibration is not None
+    assert loaded.calibration == load_artifact(calibrated).calibration
+    assert manifest["package"]["created_utc"] == "2026-11-10T00:00:00Z"
+    assert manifest["package"]["version"] == manifest["freeze"]["version"]
+    assert manifest["calibration"] == _read(calibrated)["calibration"]  # copied verbatim
+
+
+def test_only_a_calibrated_artifact_can_be_packaged(
+    tmp_path: Path, calibrated: Path, frozen: Path, fitted_dir: Path, packaged: Path
+) -> None:
+    for source in (fitted_dir, frozen, packaged):
+        with pytest.raises(ArtifactError, match="Only a calibrated"):
+            package_artifact(source, tmp_path / "x", _evaluation_for(calibrated), NOTICE_TEXT, {})
+    assert not (tmp_path / "x").exists()
+
+
+def test_a_package_is_never_overwritten(tmp_path: Path, calibrated: Path, packaged: Path) -> None:
+    with pytest.raises(ArtifactError, match="never overwritten"):
+        package_artifact(calibrated, packaged, _evaluation_for(calibrated), NOTICE_TEXT, {})
+
+
+def test_an_evaluation_for_other_weights_or_another_manifest_or_no_notice_is_refused(
+    tmp_path: Path, calibrated: Path
+) -> None:
+    good = _evaluation_for(calibrated)
+    zero = "0" * 64
+    for bad in ({**good, "weights_sha256": zero}, {**good, "calibrated_manifest_sha256": zero}):
+        with pytest.raises(ArtifactError, match="not for this exact calibrated"):
+            package_artifact(calibrated, tmp_path / "x", bad, NOTICE_TEXT, {})
+    with pytest.raises(ArtifactError, match="notice text"):
+        package_artifact(calibrated, tmp_path / "x", good, "  \n", {})
+    assert not (tmp_path / "x").exists()
+
+
+def test_a_failed_write_leaves_no_half_package(
+    tmp_path: Path, calibrated: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import defect_core.artifacts as artifacts
+
+    def broken(*_args: object, **_kwargs: object) -> None:
+        raise OSError("disk full")
+
+    monkeypatch.setattr(artifacts, "_write_manifest", broken)
+    with pytest.raises(OSError, match="disk full"):
+        package_artifact(calibrated, tmp_path / "pkg", _evaluation_for(calibrated), NOTICE_TEXT, {})
+    assert not (tmp_path / "pkg").exists()
+
+
+def test_a_changed_or_missing_notice_is_detected_on_load(packaged: Path) -> None:
+    notice = packaged / "NOTICE.md"
+    notice.write_text(NOTICE_TEXT + "extra line\n")
+    with pytest.raises(ArtifactError, match="NOTICE.md does not match"):
+        load_artifact(packaged)
+    notice.unlink()
+    with pytest.raises(ArtifactError, match="NOTICE.md is missing"):
+        load_artifact(packaged)
+
+
+@pytest.mark.parametrize(
+    ("change", "message"),
+    [
+        (lambda m: m["package"].update(version="9.9.9"), "package version differs"),
+        (lambda m: m["package"].update(weights_sha256="0" * 64), "other weights"),
+        (lambda m: m["package"]["evaluation"].update(weights_sha256="0"), "evaluation summary"),
+        (lambda m: m["package"]["evaluation"].pop("results"), "evaluation summary"),
+        (lambda m: m["package"]["evaluation"].pop("metrics_sha256"), "evaluation summary"),
+        (lambda m: m["package"].pop("notice"), "record its notice"),
+        (lambda m: m["package"]["notice"].update(file="OTHER.md"), "record its notice"),
+        (lambda m: m["package"].update(calibrated_manifest_sha256=5), "calibrated manifest"),
+        (lambda m: m.pop("package"), "exactly for a packaged"),
+        (lambda m: m.update(stage="calibrated"), "exactly for a packaged"),
+        (lambda m: m["calibration"]["block"].update(threshold=0.0), "threshold|changed after"),
+    ],
+)
+def test_a_package_whose_fields_do_not_match_is_rejected(packaged: Path, change, message) -> None:
+    _edit(packaged, change)
+    with pytest.raises(ArtifactError, match=message):
+        load_artifact(packaged)
+
+
+def test_a_package_block_on_a_frozen_artifact_is_rejected(frozen: Path) -> None:
+    _edit(frozen, lambda m: m.update(package={"version": "1.0.0"}))
+    with pytest.raises(ArtifactError, match="package block"):
+        load_artifact(frozen)
+
+
+def test_changed_weights_in_a_package_are_detected(packaged: Path) -> None:
+    data = bytearray((packaged / MODEL_FILE).read_bytes())
+    data[-1] ^= 1
+    (packaged / MODEL_FILE).write_bytes(bytes(data))
+    with pytest.raises(ArtifactError, match="SHA-256"):
+        load_artifact(packaged)

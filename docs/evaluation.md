@@ -223,26 +223,31 @@ was fixed by rule before test access (ADR-0002) and does not depend on these res
 
 - **The optional anomalib reference check** (PLAN Phase 3 step 8): not run. See the recommendation
   in `decisions.md` entry 067.
-- **Other categories**, F3 (container measurement), `make calibrate evaluate`-style one-command
-  reproduction (there are no such Makefile targets yet), and a clean-checkout reproduction test.
+- **Other categories**, F3 (container measurement), and a clean-checkout reproduction test (the
+  Makefile targets of §8 exist but have not been run from a clean checkout).
 
 ## 8. Reproducing the results
 
-With the dataset at `data/raw/mvtec-ad/` and the committed `splits/` and `data/data_manifest.json`:
+With the dataset at `data/raw/mvtec-ad/` and the committed `splits/` and `data/data_manifest.json`,
+the steps run in this order, one model at a time (the targets are in the `Makefile`):
 
 ```
-uv run python -m defect_ml.fit        ml/configs/bottle_wrn50.yaml
-uv run python -m defect_ml.freeze     ml/configs/bottle_wrn50.yaml
-uv run python -m defect_ml.calibrate  ml/configs/bottle_wrn50.yaml
-uv run python -m defect_ml.evaluate   ml/configs/bottle_wrn50.yaml ml/configs/bottle_resnet18.yaml
-uv run python -m defect_ml.visualize  ml/configs/bottle_wrn50.yaml ml/configs/bottle_resnet18.yaml
+make fit freeze calibrate        # fit on `fit`, freeze, calibrate on `calib`; no test file is opened
+make evaluate CONFIRM_OPEN_TEST_SET=yes   # the sealed test set, logged, once per version
+make figures  CONFIRM_OPEN_TEST_SET=yes   # example figures (re-reads the test files, logged)
+make package                     # package for publishing; reads only `calib` images; no upload
 ```
 
-(and the same first three for `bottle_resnet18.yaml`). Every step refuses to overwrite an earlier
-result, so a repeat needs a new version name or the earlier outputs moved aside. The fits download
-the pinned ImageNet weights (`docs/data.md`). **Not verified:** that a fresh run reproduces the
-numbers bit for bit on another machine; the scores were identical when recomputed twice on the same
-Mac (the figures step checks this), and the coreset is seeded.
+`make evaluate` and `make figures` stop with a message unless the confirmation is given in the same
+command, because opening the test set is a deliberate act. They are thin wrappers: the commands are
+`python -m defect_ml.<step> <settings files> --version 1.0.0` with the two files
+`ml/configs/bottle_wrn50.yaml` and `ml/configs/bottle_resnet18.yaml` (override with `CONFIGS=` and
+`VERSION=`). Every step refuses to overwrite an earlier result, so a repeat needs a new `VERSION` or
+the earlier outputs moved aside; the refusals were run on the existing results and changed nothing. The
+fits download the pinned ImageNet weights (`docs/data.md`). **Not verified:** a run from a clean
+checkout, and that a fresh run reproduces the numbers bit for bit on another machine; the scores were
+identical when recomputed twice on the same Mac (the figures step checks this), and the coreset is
+seeded.
 
 ## 9. Files
 

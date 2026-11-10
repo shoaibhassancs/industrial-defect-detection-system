@@ -24,6 +24,9 @@ The model is **PatchCore** (PyTorch, via the anomalib library), fitted only on d
 - The calibration arithmetic (`calibration.py`: conformal threshold, strict verdict rule, normal rank, heatmap levels), tested with synthetic numbers.
 - A resource measurement of fitting and scoring on this Mac with random data (`scripts/feasibility/f1_resources.py`).
 - Saving and loading a fitted model (`artifacts.py`: safetensors weights plus a checked `manifest.json`), tested with random data.
+- Freezing, calibrating and packaging of the two `bottle` models (`defect_ml/freeze.py`, `calibrate.py`, `package.py`): each package is a model file plus a checked manifest and a `NOTICE.md` with the dataset terms. Nothing has been uploaded anywhere yet.
+- `make` targets that run the model pipeline in order (`fit`, `freeze`, `calibrate`, `evaluate`, `figures`, `package`, `infer`; see [docs/evaluation.md](docs/evaluation.md) §8). The two that open the sealed test set refuse to run without an explicit confirmation flag.
+- A local inference command (`python -m defect_core.infer`, see below) that verifies a package and inspects one image.
 - Data notes and licensing: [docs/data.md](docs/data.md) and [DATA_LICENSE.md](DATA_LICENSE.md).
 
 Nothing else yet. The roadmap is private for now.
@@ -39,6 +42,32 @@ make test     # run the tests (about 10 seconds)
 ```
 
 On Linux, a GitHub Actions run (Ubuntu, x86_64, 2026-11-09, commit `90624b0`) installed the locked dependencies and passed lint and tests. For Linux, `uv.lock` lists the large GPU-enabled PyTorch build; a CPU-only setup has not been configured yet.
+
+## Run inference locally
+
+Needs a model package folder (the files are not in this repository; they are made by the fit, freeze,
+calibrate and package steps in [docs/evaluation.md](docs/evaluation.md) §8, or fetched from an
+artifact store once one is chosen) and an image of your own:
+
+```
+uv run python -m defect_core.infer --artifact artifacts/bottle_wide_resnet50_2_tv_in1k_v1.0.0_release path/to/image.png
+uv run python -m defect_core.infer --artifact <package folder> image.png --out results/   # also save images
+uv run python -m defect_core.infer --artifact <package folder> image.png --json           # machine-readable
+```
+
+It first verifies the package (file hashes, tensor shapes, the stored calibration and the notice);
+a damaged or edited package stops with a plain message and nothing is scored. It then prints a
+**demo decision** ("Normal" or "Anomalous": the score is above the stored threshold or not), the
+score, the threshold, the decision rule, and the **rank** ("score higher than *m* of the *n*
+calibration normal images": a rank, not a probability or a confidence), plus how much of the image
+lies above the highlight level. With `--out DIR` it saves `<name>_heatmap.png` (fixed-scale
+heatmap) and `<name>_overlay.png` (heatmap over the image with the outline), both at the original
+image size; it never overwrites an existing file. It needs no network and no dataset.
+
+The model only makes sense for images like the category it was fitted on (MVTec AD `bottle`: a
+bottle seen from above, centred, controlled lighting) and **cannot reliably tell that an image is out
+of scope**: a photo of something else will usually be called "Anomalous" with a high score. This is
+an educational demo, not a quality-control system.
 
 ## Project documents
 

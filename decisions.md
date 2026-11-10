@@ -373,6 +373,13 @@ A chronological record of every decision and significant action in this project,
 - **Not verified:** the EDA script, the new dependency group and the new tests under Linux CI; Matplotlib's non-interactive output on a machine without a display (the script selects the file-only backend, but this was only run on the Mac); that fit and calib are exchangeable beyond these six simple metrics.
 - **Files created:** `scripts/data/eda_train.py`, `scripts/data/tests/test_eda_train.py`, `scripts/tests/test_declared_imports.py`, `experiments/eda_bottle.json`, and (not committed) `data/processed/eda/*.png`. **Modified:** `pyproject.toml`, `uv.lock`, `decisions.md`, `CLAUDE.md`, `README.md`, `docs/dev-environment.md`, `project-notes/PLAN.md`, `project-notes/each-step-notes.md`. No commit, push or visibility change was made by Claude.
 
+### 064 — Second Linux CI failure fixed: benchmark test assumed macOS swap reading
+- **Date:** 2026-11-10 · **Type:** Action · **Where:** `ml/tests/test_benchmark.py` · **Status:** Done locally; Linux unverified
+- **What:** The CI run after entry 063 showed 282 passed, 1 failed (`test_a_run_records_a_labelled_proxy_measurement`). The test required `system_after.swap_used_mb` to be a number, but swap is read with the macOS-only `sysctl vm.swapusage`, so on Linux it is correctly `None`.
+- **Fix:** the test now checks only that the `swap_used_mb` key is present. The benchmark code is unchanged.
+- **Checked on the Mac:** `make lint` pass; `test_benchmark.py` 5 passed. Full suite not re-run.
+- **Unverified:** whether GitHub CI is now fully green.
+
 ---
 
 ## Open decisions

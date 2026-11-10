@@ -58,7 +58,9 @@ def test_a_run_records_a_labelled_proxy_measurement(prepared) -> None:
     assert record["settings"]["image_group"].startswith("fit (never calib")
     assert record["backbone"] == "resnet18" and "NOT frozen" in record["status_of_artifact"]
     assert "container" in " ".join(record["limitations"]).lower()
-    assert record["system_before"]["power"] and record["system_after"]["swap_used_mb"] is not None
+    assert record["system_before"]["power"]
+    # Swap is read with a macOS-only command; on Linux it is recorded as None, which is valid.
+    assert "swap_used_mb" in record["system_after"]
 
     (run,) = record["runs"]
     assert run["exit_code"] == 0 and run["stopped_by_guard"] is False

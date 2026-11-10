@@ -22,7 +22,8 @@ code:
 * opens test files only through its own reader, not through this module, and has its own check of
   which paths it may open;
 * appends every file it opens to ``evaluation/test_access_log.jsonl`` (append-only);
-* is the only code that reads ``test/`` and ``ground_truth/``.
+* together with ``visualize.py``, which uses the same reader, path check and log, is the only
+  code that reads ``test/`` and ``ground_truth/``.
 
 So opening the test set is a deliberate, logged act of a different component, and fitting and
 calibration code can not do it by accident. See ``docs/data.md`` and ``PLAN.md`` section 5.6.

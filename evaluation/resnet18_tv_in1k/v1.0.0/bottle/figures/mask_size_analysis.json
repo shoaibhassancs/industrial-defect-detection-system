@@ -1,0 +1,579 @@
+{
+ "note": "area_fraction = ground-truth pixels / image pixels at the original size; pixel_recall = share of the ground-truth region (256 x 256 mask) above the highlight level. Descriptive only.",
+ "by_defect_type": {
+  "broken_large": {
+   "n": 20,
+   "area_fraction_min": 0.040903703703703706,
+   "area_fraction_median": 0.11866975308641975,
+   "area_fraction_max": 0.27418641975308644,
+   "detected": 20,
+   "score_min": 2.7164485454559326,
+   "score_median": 2.956352472305298,
+   "median_pixel_recall_at_highlight": 1.0
+  },
+  "broken_small": {
+   "n": 22,
+   "area_fraction_min": 0.008846913580246914,
+   "area_fraction_median": 0.02437037037037037,
+   "area_fraction_max": 0.0806074074074074,
+   "detected": 22,
+   "score_min": 2.251633644104004,
+   "score_median": 2.9960333108901978,
+   "median_pixel_recall_at_highlight": 1.0
+  },
+  "contamination": {
+   "n": 21,
+   "area_fraction_min": 0.00575679012345679,
+   "area_fraction_median": 0.07247901234567901,
+   "area_fraction_max": 0.16527901234567902,
+   "detected": 21,
+   "score_min": 1.6077461242675781,
+   "score_median": 2.59013295173645,
+   "median_pixel_recall_at_highlight": 1.0
+  }
+ },
+ "by_size_third": [
+  {
+   "group": "smallest third",
+   "n": 21,
+   "area_fraction_range": [
+    0.00575679012345679,
+    0.03236913580246913
+   ],
+   "detected": 21,
+   "score_min": 1.6077461242675781,
+   "score_median": 2.85459566116333,
+   "median_pixel_recall_at_highlight": 1.0
+  },
+  {
+   "group": "middle third",
+   "n": 21,
+   "area_fraction_range": [
+    0.03334938271604938,
+    0.09461851851851852
+   ],
+   "detected": 21,
+   "score_min": 1.8164985179901123,
+   "score_median": 3.1245646476745605,
+   "median_pixel_recall_at_highlight": 1.0
+  },
+  {
+   "group": "largest third",
+   "n": 21,
+   "area_fraction_range": [
+    0.10887901234567901,
+    0.27418641975308644
+   ],
+   "detected": 21,
+   "score_min": 1.8505644798278809,
+   "score_median": 2.74780535697937,
+   "median_pixel_recall_at_highlight": 1.0
+  }
+ ],
+ "images": [
+  {
+   "path": "bottle/test/broken_large/000.png",
+   "type": "broken_large",
+   "score": 2.938654661178589,
+   "flagged": 1,
+   "area_fraction": 0.10887901234567901,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_large/001.png",
+   "type": "broken_large",
+   "score": 3.23185396194458,
+   "flagged": 1,
+   "area_fraction": 0.09461851851851852,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_large/002.png",
+   "type": "broken_large",
+   "score": 2.74780535697937,
+   "flagged": 1,
+   "area_fraction": 0.15535185185185185,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_large/003.png",
+   "type": "broken_large",
+   "score": 3.2709157466888428,
+   "flagged": 1,
+   "area_fraction": 0.27418641975308644,
+   "pixel_recall": 0.9788916736285157
+  },
+  {
+   "path": "bottle/test/broken_large/004.png",
+   "type": "broken_large",
+   "score": 3.3000659942626953,
+   "flagged": 1,
+   "area_fraction": 0.040903703703703706,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_large/005.png",
+   "type": "broken_large",
+   "score": 2.9725470542907715,
+   "flagged": 1,
+   "area_fraction": 0.04098888888888889,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_large/006.png",
+   "type": "broken_large",
+   "score": 3.324195146560669,
+   "flagged": 1,
+   "area_fraction": 0.15285185185185185,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_large/007.png",
+   "type": "broken_large",
+   "score": 2.7167699337005615,
+   "flagged": 1,
+   "area_fraction": 0.16166913580246914,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_large/008.png",
+   "type": "broken_large",
+   "score": 3.120119333267212,
+   "flagged": 1,
+   "area_fraction": 0.13038765432098764,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_large/009.png",
+   "type": "broken_large",
+   "score": 2.7291419506073,
+   "flagged": 1,
+   "area_fraction": 0.0875,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_large/010.png",
+   "type": "broken_large",
+   "score": 2.9209394454956055,
+   "flagged": 1,
+   "area_fraction": 0.11114567901234568,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_large/011.png",
+   "type": "broken_large",
+   "score": 2.7164485454559326,
+   "flagged": 1,
+   "area_fraction": 0.07474074074074075,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_large/012.png",
+   "type": "broken_large",
+   "score": 3.2335782051086426,
+   "flagged": 1,
+   "area_fraction": 0.08698395061728395,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_large/013.png",
+   "type": "broken_large",
+   "score": 2.7431018352508545,
+   "flagged": 1,
+   "area_fraction": 0.13492592592592592,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_large/014.png",
+   "type": "broken_large",
+   "score": 3.0721452236175537,
+   "flagged": 1,
+   "area_fraction": 0.0471679012345679,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_large/015.png",
+   "type": "broken_large",
+   "score": 2.940157890319824,
+   "flagged": 1,
+   "area_fraction": 0.09340617283950617,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_large/016.png",
+   "type": "broken_large",
+   "score": 2.897315263748169,
+   "flagged": 1,
+   "area_fraction": 0.14680617283950617,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_large/017.png",
+   "type": "broken_large",
+   "score": 3.0861048698425293,
+   "flagged": 1,
+   "area_fraction": 0.1408185185185185,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_large/018.png",
+   "type": "broken_large",
+   "score": 2.8764235973358154,
+   "flagged": 1,
+   "area_fraction": 0.13096296296296298,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_large/019.png",
+   "type": "broken_large",
+   "score": 3.0453269481658936,
+   "flagged": 1,
+   "area_fraction": 0.12619382716049382,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_small/000.png",
+   "type": "broken_small",
+   "score": 2.251633644104004,
+   "flagged": 1,
+   "area_fraction": 0.008846913580246914,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_small/001.png",
+   "type": "broken_small",
+   "score": 2.9636709690093994,
+   "flagged": 1,
+   "area_fraction": 0.01477283950617284,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_small/002.png",
+   "type": "broken_small",
+   "score": 3.012326717376709,
+   "flagged": 1,
+   "area_fraction": 0.03636543209876543,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_small/003.png",
+   "type": "broken_small",
+   "score": 3.2378089427948,
+   "flagged": 1,
+   "area_fraction": 0.0806074074074074,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_small/004.png",
+   "type": "broken_small",
+   "score": 3.4700605869293213,
+   "flagged": 1,
+   "area_fraction": 0.03200740740740741,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_small/005.png",
+   "type": "broken_small",
+   "score": 2.8995420932769775,
+   "flagged": 1,
+   "area_fraction": 0.015143209876543209,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_small/006.png",
+   "type": "broken_small",
+   "score": 2.85459566116333,
+   "flagged": 1,
+   "area_fraction": 0.026909876543209876,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_small/007.png",
+   "type": "broken_small",
+   "score": 2.404176712036133,
+   "flagged": 1,
+   "area_fraction": 0.021044444444444445,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_small/008.png",
+   "type": "broken_small",
+   "score": 2.5334084033966064,
+   "flagged": 1,
+   "area_fraction": 0.021371604938271605,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_small/009.png",
+   "type": "broken_small",
+   "score": 3.076820135116577,
+   "flagged": 1,
+   "area_fraction": 0.02357530864197531,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_small/010.png",
+   "type": "broken_small",
+   "score": 3.1245646476745605,
+   "flagged": 1,
+   "area_fraction": 0.04589753086419753,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_small/011.png",
+   "type": "broken_small",
+   "score": 2.6068549156188965,
+   "flagged": 1,
+   "area_fraction": 0.019255555555555557,
+   "pixel_recall": 0.9865293185419969
+  },
+  {
+   "path": "bottle/test/broken_small/012.png",
+   "type": "broken_small",
+   "score": 3.239478349685669,
+   "flagged": 1,
+   "area_fraction": 0.07801358024691359,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_small/013.png",
+   "type": "broken_small",
+   "score": 2.5645053386688232,
+   "flagged": 1,
+   "area_fraction": 0.03236913580246913,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_small/014.png",
+   "type": "broken_small",
+   "score": 2.5389959812164307,
+   "flagged": 1,
+   "area_fraction": 0.017958024691358026,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_small/015.png",
+   "type": "broken_small",
+   "score": 2.7325828075408936,
+   "flagged": 1,
+   "area_fraction": 0.016641975308641976,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_small/016.png",
+   "type": "broken_small",
+   "score": 2.9797399044036865,
+   "flagged": 1,
+   "area_fraction": 0.020466666666666668,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_small/017.png",
+   "type": "broken_small",
+   "score": 3.4526171684265137,
+   "flagged": 1,
+   "area_fraction": 0.02516543209876543,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_small/018.png",
+   "type": "broken_small",
+   "score": 3.5481371879577637,
+   "flagged": 1,
+   "area_fraction": 0.05717777777777778,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_small/019.png",
+   "type": "broken_small",
+   "score": 3.078951358795166,
+   "flagged": 1,
+   "area_fraction": 0.027933333333333334,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_small/020.png",
+   "type": "broken_small",
+   "score": 3.2916576862335205,
+   "flagged": 1,
+   "area_fraction": 0.03497901234567901,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/broken_small/021.png",
+   "type": "broken_small",
+   "score": 3.1305625438690186,
+   "flagged": 1,
+   "area_fraction": 0.018512345679012346,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/contamination/000.png",
+   "type": "contamination",
+   "score": 2.5085666179656982,
+   "flagged": 1,
+   "area_fraction": 0.07247901234567901,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/contamination/001.png",
+   "type": "contamination",
+   "score": 2.0485823154449463,
+   "flagged": 1,
+   "area_fraction": 0.07175308641975309,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/contamination/002.png",
+   "type": "contamination",
+   "score": 2.8306145668029785,
+   "flagged": 1,
+   "area_fraction": 0.01841111111111111,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/contamination/003.png",
+   "type": "contamination",
+   "score": 1.6077461242675781,
+   "flagged": 1,
+   "area_fraction": 0.026317283950617283,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/contamination/004.png",
+   "type": "contamination",
+   "score": 1.8706332445144653,
+   "flagged": 1,
+   "area_fraction": 0.020728395061728393,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/contamination/005.png",
+   "type": "contamination",
+   "score": 2.8997750282287598,
+   "flagged": 1,
+   "area_fraction": 0.12290617283950617,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/contamination/006.png",
+   "type": "contamination",
+   "score": 2.4831225872039795,
+   "flagged": 1,
+   "area_fraction": 0.15301604938271604,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/contamination/007.png",
+   "type": "contamination",
+   "score": 3.5647735595703125,
+   "flagged": 1,
+   "area_fraction": 0.05561481481481481,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/contamination/008.png",
+   "type": "contamination",
+   "score": 2.59013295173645,
+   "flagged": 1,
+   "area_fraction": 0.16527901234567902,
+   "pixel_recall": 0.9998151229432427
+  },
+  {
+   "path": "bottle/test/contamination/009.png",
+   "type": "contamination",
+   "score": 2.651885986328125,
+   "flagged": 1,
+   "area_fraction": 0.13782716049382715,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/contamination/010.png",
+   "type": "contamination",
+   "score": 2.7254786491394043,
+   "flagged": 1,
+   "area_fraction": 0.1151,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/contamination/011.png",
+   "type": "contamination",
+   "score": 2.2601611614227295,
+   "flagged": 1,
+   "area_fraction": 0.14911234567901235,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/contamination/012.png",
+   "type": "contamination",
+   "score": 1.8505644798278809,
+   "flagged": 1,
+   "area_fraction": 0.1513679012345679,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/contamination/013.png",
+   "type": "contamination",
+   "score": 3.413017749786377,
+   "flagged": 1,
+   "area_fraction": 0.05101111111111111,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/contamination/014.png",
+   "type": "contamination",
+   "score": 3.4448466300964355,
+   "flagged": 1,
+   "area_fraction": 0.006702469135802469,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/contamination/015.png",
+   "type": "contamination",
+   "score": 2.837259292602539,
+   "flagged": 1,
+   "area_fraction": 0.04170246913580247,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/contamination/016.png",
+   "type": "contamination",
+   "score": 2.1782031059265137,
+   "flagged": 1,
+   "area_fraction": 0.15125308641975307,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/contamination/017.png",
+   "type": "contamination",
+   "score": 3.4297993183135986,
+   "flagged": 1,
+   "area_fraction": 0.08338395061728394,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/contamination/018.png",
+   "type": "contamination",
+   "score": 3.212526559829712,
+   "flagged": 1,
+   "area_fraction": 0.00575679012345679,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/contamination/019.png",
+   "type": "contamination",
+   "score": 1.8164985179901123,
+   "flagged": 1,
+   "area_fraction": 0.03334938271604938,
+   "pixel_recall": 1.0
+  },
+  {
+   "path": "bottle/test/contamination/020.png",
+   "type": "contamination",
+   "score": 2.013646125793457,
+   "flagged": 1,
+   "area_fraction": 0.14985802469135803,
+   "pixel_recall": 1.0
+  }
+ ]
+}

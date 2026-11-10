@@ -18,7 +18,7 @@ The model is **PatchCore** (PyTorch, via the anomalib library), fitted only on d
 - A train-only look at those images (`scripts/data/eda_train.py`): simple brightness, colour and sharpness numbers, comparing the fit and calibration groups (a rough check, not a proof). It reads training images only.
 - Shared image preprocessing (`core/src/defect_core/preprocessing.py`) with tests on synthetic images. The PatchCore wrapper (`model.py`: build, fit, score) with tests on random data.
 - A second Python package, `ml/` (`defect_ml`): the single guard that lets data tools open only training images, the split rules, and a loader for the `fit` and `calib` images that checks every file against the verified manifest (`scripts/data/check_loader.py` checks it on the real `bottle` training images).
-- A fit program (`defect_ml/fit.py`, settings in `ml/configs/`) and the first two real fits on the `bottle` `fit` images; the weights are pinned by tag and recorded with their hashes (`docs/data.md`). The sealed test evaluation (`defect_ml/evaluate.py`) has been run once for `bottle`; results are in `evaluation/` (decisions.md entry 065: image AUROC 1.00 for both models, but false alarms on normal test images above the 5% target). Both fitted models have been frozen and calibrated on the 42 held-out `calib` images (`defect_ml/freeze.py`, `defect_ml/calibrate.py`; `decisions.md` entry 061). The test set is still unopened and no detection quality has been measured.
+- A fit program (`defect_ml/fit.py`, settings in `ml/configs/`) and the first two real fits on the `bottle` `fit` images; the weights are pinned by tag and recorded with their hashes (`docs/data.md`). The sealed test evaluation (`defect_ml/evaluate.py`) has been run once for `bottle`; results are in `evaluation/` (decisions.md entries 065–066: image AUROC 1.00 for both models, but false alarms on normal test images above the 5% target; example figures in `evaluation/*/v1.0.0/bottle/figures/`). Both fitted models have been frozen and calibrated on the 42 held-out `calib` images (`defect_ml/freeze.py`, `defect_ml/calibrate.py`; `decisions.md` entry 061). The test set is still unopened and no detection quality has been measured.
 - A serving-style benchmark (`defect_ml/benchmark.py`) of the fitted models: native macOS proxy measurements only; the container measurements are still open.
 - Rendering of results (`render.py`: fixed-scale inferno heatmap, overlay with outline, largest highlighted region, area fraction), tested with synthetic arrays.
 - The calibration arithmetic (`calibration.py`: conformal threshold, strict verdict rule, normal rank, heatmap levels), tested with synthetic numbers.
@@ -47,6 +47,8 @@ On Linux, a GitHub Actions run (Ubuntu, x86_64, 2026-11-09, commit `90624b0`) in
 - [docs/dev-environment.md](docs/dev-environment.md): machine, tools, and library versions.
 - [docs/adr/ADR-0002-model-and-serving.md](docs/adr/ADR-0002-model-and-serving.md): Checkpoint A, the rule that names the headline model and the frozen calibration settings.
 - [docs/data.md](docs/data.md): the dataset, its layout, citation, and what has been checked.
+- [docs/evaluation.md](docs/evaluation.md): how the models were evaluated and what the saved results show, including the false alarms and the limits.
+- [docs/model-card.md](docs/model-card.md): short model card (intended use, limits, results).
 - [DATA_LICENSE.md](DATA_LICENSE.md): dataset license and attribution, and what is and is not redistributed.
 
 ## Dataset and attribution

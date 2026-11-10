@@ -1,4 +1,4 @@
-"""The sealed evaluation: the only code that opens the official `test/` and `ground_truth/` files.
+"""The sealed evaluation: the code of the sealed path that opens `test/` and `ground_truth/` files.
 
     uv run python -m defect_ml.evaluate ml/configs/bottle_wrn50.yaml ml/configs/bottle_resnet18.yaml
 
@@ -6,6 +6,9 @@
 batch: every file is checked first, nothing is opened until all pass, and then the models are
 evaluated one after the other with identical code and settings. The command prints no metric, only
 where the results were written, so no number can steer a choice for the next model.
+
+The sealed path is this module and ``visualize.py`` (figures), which imports this module's reader,
+path check and log, so both obey the same rules and write to the same log.
 
 Rules this code enforces, each tested:
 

@@ -1,0 +1,150 @@
+{
+ "step": "Phase 3 step 7: figures and failure analysis (descriptive; nothing tuned)",
+ "run_id": "bottle_wide_resnet50_2_tv_in1k_v1.0.0_visualize_20261110T045144Z",
+ "version": "1.0.0",
+ "weights_sha256": "465f83449447ad9df33eb28b09a3372fb2000a96055ebc71fea7b2dafa5b0b7c",
+ "selection_rule": "all false positives; all false negatives; for each defect type (alphabetical) the lowest-scoring and the median-scoring correct detection (median = element (n-1)//2 of the scores sorted ascending, ties broken by path); tiles ordered by group, then path",
+ "threshold": 1.3681522607803345,
+ "tiles": [
+  {
+   "group": "false_positive",
+   "why": "false positive",
+   "path": "bottle/test/good/001.png",
+   "score": 1.4072016477584839,
+   "highlighted_area_fraction": 0.014611111111111111,
+   "sheet": "false_positives.png"
+  },
+  {
+   "group": "false_positive",
+   "why": "false positive",
+   "path": "bottle/test/good/015.png",
+   "score": 1.4876797199249268,
+   "highlighted_area_fraction": 0.04829135802469136,
+   "sheet": "false_positives.png"
+  },
+  {
+   "group": "false_positive",
+   "why": "false positive",
+   "path": "bottle/test/good/019.png",
+   "score": 1.382062315940857,
+   "highlighted_area_fraction": 0.05901358024691358,
+   "sheet": "false_positives.png"
+  },
+  {
+   "group": "true_positive",
+   "why": "broken_large: lowest-scoring detection",
+   "path": "bottle/test/broken_large/011.png",
+   "score": 2.661494016647339,
+   "highlighted_area_fraction": 0.17114567901234568,
+   "sheet": "true_positives.png"
+  },
+  {
+   "group": "true_positive",
+   "why": "broken_large: median-scoring detection",
+   "path": "bottle/test/broken_large/009.png",
+   "score": 3.0761380195617676,
+   "highlighted_area_fraction": 0.20857037037037038,
+   "sheet": "true_positives.png"
+  },
+  {
+   "group": "true_positive",
+   "why": "broken_small: lowest-scoring detection",
+   "path": "bottle/test/broken_small/000.png",
+   "score": 2.440119504928589,
+   "highlighted_area_fraction": 0.054566666666666666,
+   "sheet": "true_positives.png"
+  },
+  {
+   "group": "true_positive",
+   "why": "broken_small: median-scoring detection",
+   "path": "bottle/test/broken_small/009.png",
+   "score": 2.9740376472473145,
+   "highlighted_area_fraction": 0.09704691358024692,
+   "sheet": "true_positives.png"
+  },
+  {
+   "group": "true_positive",
+   "why": "contamination: lowest-scoring detection",
+   "path": "bottle/test/contamination/003.png",
+   "score": 1.811228632926941,
+   "highlighted_area_fraction": 0.09007530864197531,
+   "sheet": "true_positives.png"
+  },
+  {
+   "group": "true_positive",
+   "why": "contamination: median-scoring detection",
+   "path": "bottle/test/contamination/009.png",
+   "score": 2.8051633834838867,
+   "highlighted_area_fraction": 0.3171358024691358,
+   "sheet": "true_positives.png"
+  }
+ ],
+ "counts": {
+  "false_positive": 3,
+  "true_positive": 6
+ },
+ "scores_identical_to_predictions_csv": true,
+ "data_access": {
+  "images_read": 83,
+  "masks_read": 63,
+  "files_opened_inside_dataset_folder": 146,
+  "exactly_the_listed_files_each_once": true,
+  "directory_listings_inside_dataset_folder": 0,
+  "access_log": "evaluation/test_access_log.jsonl"
+ },
+ "file_bytes": {
+  "false_positives.png": 302187,
+  "mask_size_analysis.json": 14366,
+  "true_positives.png": 632897
+ },
+ "peak_rss_mb": 1039.4,
+ "system_before": {
+  "time_utc": "2026-11-10T04:51:44+00:00",
+  "swap_used_mb": 2442.94,
+  "free_disk_gib": 9.85,
+  "load_average": [
+   2.26,
+   2.18,
+   2.03
+  ],
+  "memory_free_percentage": "System-wide memory free percentage: 37%",
+  "power": [
+   "Now drawing from 'AC Power'",
+   " -InternalBattery-0 (id=21102691)\t100%; charged; 0:00 remaining present: true"
+  ],
+  "thermal": [
+   "Note: No thermal warning level has been recorded",
+   "Note: No performance warning level has been recorded",
+   "Note: No CPU power status has been recorded"
+  ]
+ },
+ "system_after": {
+  "time_utc": "2026-11-10T04:52:04+00:00",
+  "swap_used_mb": 2442.94,
+  "free_disk_gib": 9.85,
+  "load_average": [
+   2.48,
+   2.24,
+   2.06
+  ],
+  "memory_free_percentage": "System-wide memory free percentage: 37%",
+  "power": [
+   "Now drawing from 'AC Power'",
+   " -InternalBattery-0 (id=21102691)\t100%; charged; 0:00 remaining present: true"
+  ],
+  "thermal": [
+   "Note: No thermal warning level has been recorded",
+   "Note: No performance warning level has been recorded",
+   "Note: No CPU power status has been recorded"
+  ]
+ },
+ "watchdog": {
+  "max_swap_used_mb_seen": 2442.9,
+  "min_free_disk_gib_seen": 9.85
+ },
+ "limitations": [
+  "Tiles are examples chosen by a fixed rule, not a random or complete sample.",
+  "Heatmaps use the calibration's fixed scale; the 1.5 multiple is an unvalidated display choice.",
+  "What the pictures seem to show is a reading by a person or by Claude, not a measured cause."
+ ]
+}

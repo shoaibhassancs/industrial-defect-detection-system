@@ -61,7 +61,7 @@ After the model is frozen and calibrated (Phase 3), the held-out test images and
 1. refuses to run unless the artifact's manifest is frozen and calibrated;
 2. reads test files through its own reader, with its own check of which paths it may open, and not through the training loader;
 3. appends every file it opens to `evaluation/test_access_log.jsonl`, an append-only log;
-4. is the only code that reads `test/` and `ground_truth/`.
+4. together with `defect_ml/visualize.py` (figures; it imports `evaluate.py`'s reader, path check and log, tags its reads `purpose: "visualize"`, and requires its recomputed scores to equal the saved `predictions.csv` exactly), is the only code that reads `test/` and `ground_truth/`.
 
 So opening the test set is a deliberate, logged act of a different component, and fitting or calibration code cannot do it by accident. If the model or its settings change afterwards, that is a new version and a new sealed evaluation (see `PLAN.md` section 5.6).
 

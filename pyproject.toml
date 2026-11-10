@@ -1,7 +1,7 @@
 # Root of the uv workspace (virtual root: no project of its own).
-# Members are added only when they are first needed: core/, ml/ (since Phase 2 step 5 groundwork), backend/ in Phase 5.
+# Members are added only when they are first needed: core/, ml/ (since Phase 2 step 5 groundwork), backend/ (since Phase 5).
 [tool.uv.workspace]
-members = ["core", "ml"]
+members = ["core", "ml", "backend"]
 
 # Groups installed by default, so `uv sync --all-packages` (make setup, CI) includes both.
 [tool.uv]
@@ -12,6 +12,7 @@ default-groups = ["dev", "scripts"]
 dev = [
     "ruff",
     "pytest",
+    "httpx",  # used by FastAPI's TestClient in backend/tests
 ]
 # Packages imported DIRECTLY by the repository's scripts/ and tests (feasibility experiments,
 # dataset tools, tests). Declared here instead of relying on them arriving through anomalib.
@@ -37,5 +38,5 @@ extend-exclude = [".venv"]
 select = ["E", "W", "F", "I", "UP", "B"]
 
 [tool.pytest.ini_options]
-testpaths = ["core/tests", "ml/tests", "scripts/data/tests", "scripts/tests"]
+testpaths = ["core/tests", "ml/tests", "backend/tests", "scripts/data/tests", "scripts/tests"]
 addopts = "-ra"

@@ -1,7 +1,7 @@
 """Every third-party package that the repository's Python files import directly must be declared.
 
-Declared means: listed in a root `[dependency-groups]` group or in `core/pyproject.toml` or
-`ml/pyproject.toml`. Relying on
+Declared means: listed in a root `[dependency-groups]` group or in `core/pyproject.toml`,
+`ml/pyproject.toml` or `backend/pyproject.toml`. Relying on
 a package arriving indirectly through another one can break a clean setup (CI, a fresh clone).
 """
 
@@ -15,9 +15,11 @@ from importlib.metadata import packages_distributions
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-FIRST_PARTY = {"defect_core", "defect_ml"}  # our own packages
+FIRST_PARTY = {"defect_core", "defect_ml", "app"}  # our own packages
 # Scripts import their siblings by file name (scripts/data/*.py); these are not packages.
 LOCAL_MODULES = {p.stem for p in (REPO / "scripts").rglob("*.py")}
+# The backend's tests import their helper files (conftest.py, backend_imaging.py) by name.
+LOCAL_MODULES |= {p.stem for p in (REPO / "backend" / "tests").glob("*.py")}
 
 
 def normalise(name: str) -> str:
@@ -31,7 +33,7 @@ def requirement_name(spec: str) -> str:
 def declared_packages() -> set[str]:
     root = tomllib.loads((REPO / "pyproject.toml").read_text())
     specs = [s for group in root.get("dependency-groups", {}).values() for s in group]
-    for package in ("core", "ml"):
+    for package in ("core", "ml", "backend"):
         project = tomllib.loads((REPO / package / "pyproject.toml").read_text())
         specs += project["project"].get("dependencies", [])
     return {requirement_name(s) for s in specs}
@@ -39,7 +41,7 @@ def declared_packages() -> set[str]:
 
 def imported_top_level_modules() -> dict[str, list[str]]:
     found: dict[str, list[str]] = {}
-    for base in ("core", "ml", "scripts"):
+    for base in ("core", "ml", "backend", "scripts"):
         for path in (REPO / base).rglob("*.py"):
             for node in ast.walk(ast.parse(path.read_text())):
                 if isinstance(node, ast.Import):

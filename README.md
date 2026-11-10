@@ -26,6 +26,7 @@ The model is **PatchCore** (PyTorch, via the anomalib library), fitted only on d
 - Saving and loading a fitted model (`artifacts.py`: safetensors weights plus a checked `manifest.json`), tested with random data.
 - Freezing, calibrating and packaging of the two `bottle` models (`defect_ml/freeze.py`, `calibrate.py`, `package.py`): each package is a model file plus a checked manifest and a `NOTICE.md` with the dataset terms. Nothing has been uploaded anywhere yet.
 - `make` targets that run the model pipeline in order (`fit`, `freeze`, `calibrate`, `evaluate`, `figures`, `package`, `infer`; see [docs/evaluation.md](docs/evaluation.md) §8). The two that open the sealed test set refuse to run without an explicit confirmation flag.
+- A local API (`backend/`, FastAPI): health and readiness, categories, model description, evaluation, and a stateless `POST /api/v1/inspections` that uses the same inference function as the command line; settings are documented in `.env.example`. Not deployed, no Docker image yet.
 - A local inference command (`python -m defect_core.infer`, see below) that verifies a package and inspects one image.
 - Data notes and licensing: [docs/data.md](docs/data.md) and [DATA_LICENSE.md](DATA_LICENSE.md).
 
@@ -68,6 +69,27 @@ The model only makes sense for images like the category it was fitted on (MVTec 
 bottle seen from above, centred, controlled lighting) and **cannot reliably tell that an image is out
 of scope**: a photo of something else will usually be called "Anomalous" with a high score. This is
 an educational demo, not a quality-control system.
+
+## Run the API locally
+
+```
+export MODEL_DIR=artifacts/bottle_wide_resnet50_2_tv_in1k_v1.0.0_release   # a model package (see above)
+uv run uvicorn --factory app.main:create_app --app-dir backend --port 8000 --no-access-log
+# interactive documentation: http://127.0.0.1:8000/docs
+curl -F category=bottle -F file=@image.png http://127.0.0.1:8000/api/v1/inspections
+```
+
+The service starts at once and answers `/api/v1/health`; `/api/v1/ready` says 503 until the package
+has been verified and warmed up (and stays 503 with `"failed"` if it cannot be served; the reason is
+in the log). Settings are environment variables, listed with their defaults in
+[.env.example](.env.example); a bad value stops the start-up with a clear message. Uploads must be
+JPEG or PNG (checked by their bytes, not their name), at most 10 MB, each side 64 to 8000 pixels. Errors
+use one envelope, `{"error": {"code", "message", "details", "request_id"}}`. The result is a demo
+decision with the same fields as the command line (score, threshold, rank, heatmap and overlay as
+PNG data URLs); nothing is stored. Only one inspection runs at a time; others wait up to
+`INFERENCE_QUEUE_TIMEOUT_S` and then get 503 `BUSY`. Inspections are rate-limited per client
+(`RATE_LIMIT`); behind a proxy set `TRUSTED_PROXY_HOPS` (see `.env.example`; the right value for
+Render is **unverified**). This is a local development setup: not deployed, no container image yet.
 
 ## Project documents
 

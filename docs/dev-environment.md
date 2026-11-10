@@ -61,13 +61,23 @@ The lockfile lists 102 packages (our own `defect-core`, 4 development tools, and
 - **Order of calls:** a train-mode pass collects patch features, `subsample_embedding` builds the memory bank, and only then does an eval-mode pass work. Scoring with an empty bank raises `ValueError`.
 - **Harmless warnings:** timm and anomalib print deprecation warnings (`FutureWarning`, and a `DeprecationWarning` about an unused `embeddings` argument of `subsample_embedding`).
 
+## Web stack (added 2026-11-10 for Phase 5, installed locally from PyPI; versions are pinned by `uv.lock`)
+
+`backend/` declares: FastAPI 0.162.2, Starlette 1.10.0, Pydantic 2.14.3, pydantic-settings 2.16.2,
+Uvicorn 0.54.0, python-multipart 0.0.33, structlog 26.1.0, slowapi 0.1.10 and `limits` 5.8.0 (used by
+slowapi and the settings check). httpx 0.28.1 is a development dependency (FastAPI's test client).
+Adding them added 306 lines to `uv.lock` and changed no existing pin. **Native macOS measurement
+(proxy, not a container):** the real server with the `wide_resnet50_2` package used about 752 MB
+resident after load and warm-up and about 898 MB after three inspections of a 400 x 300 image (about
+0.27-0.31 s each over HTTP, one thread).
+
 ## Commands
 
 ```
 make setup    # install everything into .venv (uv sync --all-packages)
 make lint     # Ruff checks, no changes
 make format   # Ruff auto-fix and format
-make test     # run the test suite (about 10 seconds)
+make test     # run the test suite (about 5-6 minutes on the M1 with the model tests)
 ```
 
 ## Related files

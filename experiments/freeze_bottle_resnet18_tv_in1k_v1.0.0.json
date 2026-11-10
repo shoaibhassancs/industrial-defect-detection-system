@@ -1,0 +1,77 @@
+{
+ "step": "Phase 3 step 2: freeze a fitted artifact",
+ "status": "frozen; NOT calibrated; no test image or mask involved",
+ "version": "1.0.0",
+ "run_name": "bottle_resnet18_tv_in1k_fit-v0",
+ "source_artifact": "artifacts/bottle_resnet18_tv_in1k_fit-v0",
+ "frozen_artifact": "artifacts/bottle_resnet18_tv_in1k_frozen-v1.0.0",
+ "weights_sha256": "e91b87e2fb1984fc5b34695f4462a1b9a571d26e6829aed07b3a70c6ccfe2720",
+ "weights_bytes": 37425984,
+ "weights_identical_to_fitted": true,
+ "reloads_cleanly_as_stage": "frozen",
+ "frozen_settings": {
+  "alpha": 0.05,
+  "lower_percentile": 1,
+  "highlight_percentile": 99.5,
+  "upper_multiple": 1.5,
+  "upper_multiple_status": "unvalidated display choice; never tune on test images",
+  "config_file": "ml/configs/bottle_resnet18.yaml",
+  "config_sha256": "715ec53f2eb32a2aef651c2741843bbd0b59600871bce20cf7403bf2a0c5e16c"
+ },
+ "fit_record": "experiments/fit_bottle_resnet18_tv_in1k_fit-v0.json",
+ "fit_record_sha256": "f0da582d7e7da26b953f8a61cc87f494493f1cfcc2f000a6134a91d9939d7c25",
+ "manifest_sha256": "8cbc5b1c8b24da3d37981b1788ed3b53f4c170f9f09f5e03bece3f0c348c63cd",
+ "data_access": {
+  "dataset_files_opened": 0,
+  "directory_listings_inside_dataset_folder": 0,
+  "method": "sys.addaudithook: open, os.listdir, os.scandir during the freeze"
+ },
+ "git": {
+  "commit": "4c944e85ad8f211e418ef56d72c79b6b39581c5e",
+  "uncommitted_changes": true
+ },
+ "system_before": {
+  "time_utc": "2026-11-10T03:37:05+00:00",
+  "swap_used_mb": 2457.38,
+  "free_disk_gib": 8.9,
+  "load_average": [
+   4.22,
+   2.71,
+   2.48
+  ],
+  "memory_free_percentage": "System-wide memory free percentage: 39%",
+  "power": [
+   "Now drawing from 'AC Power'",
+   " -InternalBattery-0 (id=21102691)\t94%; charging; 0:24 remaining present: true"
+  ],
+  "thermal": [
+   "Note: No thermal warning level has been recorded",
+   "Note: No performance warning level has been recorded",
+   "Note: No CPU power status has been recorded"
+  ]
+ },
+ "system_after": {
+  "time_utc": "2026-11-10T03:37:06+00:00",
+  "swap_used_mb": 2457.38,
+  "free_disk_gib": 8.86,
+  "load_average": [
+   4.12,
+   2.72,
+   2.48
+  ],
+  "memory_free_percentage": "System-wide memory free percentage: 38%",
+  "power": [
+   "Now drawing from 'AC Power'",
+   " -InternalBattery-0 (id=21102691)\t94%; charging; 0:24 remaining present: true"
+  ],
+  "thermal": [
+   "Note: No thermal warning level has been recorded",
+   "Note: No performance warning level has been recorded",
+   "Note: No CPU power status has been recorded"
+  ]
+ },
+ "limitations": [
+  "Freezing copies and labels; it does not measure quality and does not calibrate.",
+  "The fit record was written before the 'calibration' section existed in the YAML; the frozen settings come from the YAML as it is now and were fixed before any calibration or test access (decisions.md entry 060)."
+ ]
+}

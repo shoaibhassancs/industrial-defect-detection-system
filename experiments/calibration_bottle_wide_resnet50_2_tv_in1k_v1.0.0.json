@@ -1,0 +1,112 @@
+{
+ "step": "Phase 3 step 3: calibrate a frozen artifact on the `calib` split",
+ "status": "calibrated on held-out training normals; NOT evaluated; no test image or mask",
+ "version": "1.0.0",
+ "run_name": "bottle_wide_resnet50_2_tv_in1k_fit-v0",
+ "frozen_artifact": "artifacts/bottle_wide_resnet50_2_tv_in1k_frozen-v1.0.0",
+ "calibrated_artifact": "artifacts/bottle_wide_resnet50_2_tv_in1k_v1.0.0",
+ "weights_sha256": "465f83449447ad9df33eb28b09a3372fb2000a96055ebc71fea7b2dafa5b0b7c",
+ "calibrated_manifest_sha256": "70b8fa558cf34e0b257b07a9f83e7fe86d78c527dbb9171770318db5dd8185a1",
+ "settings": {
+  "alpha": 0.05,
+  "lower_percentile": 1,
+  "highlight_percentile": 99.5,
+  "upper_multiple": 1.5
+ },
+ "calibration": {
+  "n": 42,
+  "k": 41,
+  "threshold": 1.3681522607803345,
+  "false_alarm_bound": 0.046511627906976744,
+  "score_min": 1.013892412185669,
+  "score_median": 1.20536470413208,
+  "score_max": 1.3915722370147705,
+  "calib_images_above_threshold": 1,
+  "pixel_levels": {
+   "lower": 0.33926492512226103,
+   "highlight": 1.2375992143154142,
+   "upper": 1.8563988214731213
+  },
+  "block_sha256": "3e58de27d38f751b3c9102d967ee439030f80bf1574aadb09c718fe01a45cc34"
+ },
+ "calibrated_manifest_reloads_and_matches": true,
+ "inputs": {
+  "group": "calib",
+  "n": 42,
+  "image_list_sha256": "e0815484d2c6dac1810ef34dad14c61cb518eccb25fbac334ce827a259f40f3a",
+  "split_lists_sha256": "9e077545997de454131f8060af32936e469aba9a949b6ae93d3967bce9502291",
+  "split_seed": 0,
+  "data_manifest_sha256": "db95f8235aa5c81ab74ec6abbacb3ec427b4b0a27555286aad52f98ed52e26e2",
+  "preprocessing_version": "1",
+  "batch_size": 1,
+  "torch_threads": 4
+ },
+ "data_access": {
+  "group_read": "calib",
+  "images_loaded": 42,
+  "method": "sys.addaudithook: open, os.listdir, os.scandir during scoring",
+  "files_opened_inside_dataset_folder": 42,
+  "exactly_the_listed_calib_files_each_once": true,
+  "directory_listings_inside_dataset_folder": 0
+ },
+ "git": {
+  "commit": "4c944e85ad8f211e418ef56d72c79b6b39581c5e",
+  "uncommitted_changes": true
+ },
+ "versions": {
+  "python": "3.12.16",
+  "torch": "2.15.0",
+  "platform": "macOS-15.2-arm64-arm-64bit"
+ },
+ "peak_rss_mb": 1039.9,
+ "system_before": {
+  "time_utc": "2026-11-10T03:37:39+00:00",
+  "swap_used_mb": 2483.5,
+  "free_disk_gib": 8.59,
+  "load_average": [
+   3.79,
+   2.79,
+   2.51
+  ],
+  "memory_free_percentage": "System-wide memory free percentage: 39%",
+  "power": [
+   "Now drawing from 'AC Power'",
+   " -InternalBattery-0 (id=21102691)\t94%; charging; 0:23 remaining present: true"
+  ],
+  "thermal": [
+   "Note: No thermal warning level has been recorded",
+   "Note: No performance warning level has been recorded",
+   "Note: No CPU power status has been recorded"
+  ]
+ },
+ "system_after": {
+  "time_utc": "2026-11-10T03:37:55+00:00",
+  "swap_used_mb": 2524.62,
+  "free_disk_gib": 8.4,
+  "load_average": [
+   3.61,
+   2.79,
+   2.52
+  ],
+  "memory_free_percentage": "System-wide memory free percentage: 34%",
+  "power": [
+   "Now drawing from 'AC Power'",
+   " -InternalBattery-0 (id=21102691)\t94%; charging; 0:23 remaining present: true"
+  ],
+  "thermal": [
+   "Note: No thermal warning level has been recorded",
+   "Note: No performance warning level has been recorded",
+   "Note: No CPU power status has been recorded"
+  ]
+ },
+ "watchdog": {
+  "max_swap_used_mb_seen": 2483.5,
+  "min_free_disk_gib_seen": 8.59
+ },
+ "limitations": [
+  "These numbers describe normal training images only. They say nothing about how well defects are found (that needs the sealed test set, which has not been opened).",
+  "The false-alarm bound is for new normal images drawn like the calibration images; it is not a statement about a different camera, lighting or product.",
+  "With 42 images the threshold is the 41st smallest score; one calibration image lies above it by construction.",
+  "The heatmap multiple 1.5 is an unvalidated display choice (decisions.md entry 060)."
+ ]
+}

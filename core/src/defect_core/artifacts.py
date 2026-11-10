@@ -12,6 +12,13 @@ Format (decision 014, confirmed by the owner on 2026-11-10, after step F2):
 The Gaussian blur kernel of the anomaly map is *not* saved: anomalib rebuilds it in ``__init__``.
 Its shape and hash are recorded, and ``load_artifact`` refuses a model whose rebuilt kernel differs.
 
+Stages (Phase 3 steps 2-3). A fitted artifact has no ``stage`` key. ``freeze_artifact`` copies
+it to a new folder with ``stage: "frozen"`` and a ``freeze`` block (version, the settings fixed
+in advance, and the hash of the weights it came from). ``calibrate_artifact`` copies a frozen
+artifact to another new folder with ``stage: "calibrated"`` and a ``calibration`` block. No stage
+changes the weights, and no stage overwrites an earlier one. ``load_artifact`` checks the stage
+fields (see ``_check_stage``).
+
 Loading checks, in this order: the manifest is well formed; the preprocessing version is the one
 this code implements; the weights file has the recorded size and SHA-256 (before it is opened as
 tensors); the tensor names, shapes and dtypes match the manifest; the rebuilt model accepts the
@@ -22,8 +29,10 @@ This is the local file layout. Choosing where artifacts are stored and published
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
+import shutil
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -33,6 +42,7 @@ import torch
 from anomalib.models.image.patchcore.torch_model import PatchcoreModel
 from safetensors.torch import load_file, save_file
 
+from defect_core.calibration import Calibration, CalibrationError
 from defect_core.model import ModelConfig, build_model
 from defect_core.preprocessing import PREPROCESSING_VERSION, PreprocessConfig
 
@@ -45,6 +55,10 @@ _BACKBONE_PREFIX = "feature_extractor."
 _BANK_KEY = "memory_bank"
 _REBUILT_KEYS = ("anomaly_map_generator.blur.kernel",)  # rebuilt by anomalib, not saved
 
+STAGE_FROZEN = "frozen"
+STAGE_CALIBRATED = "calibrated"
+SETTING_KEYS = ("alpha", "lower_percentile", "highlight_percentile", "upper_multiple")
+
 
 class ArtifactError(Exception):
     """The artifact is missing, damaged, or does not match its manifest."""
@@ -56,6 +70,7 @@ class LoadedArtifact:
     model_config: ModelConfig
     preprocess_config: PreprocessConfig
     manifest: dict[str, object]
+    calibration: Calibration | None = None  # present only for a calibrated artifact
 
 
 # --- helpers -------------------------------------------------------------------------------
@@ -296,9 +311,196 @@ def load_artifact(directory: str | Path) -> LoadedArtifact:
         "The anomaly-map blur kernel rebuilt by this anomalib differs from the one the artifact "
         "was made with (anomalib version change?)",
     )
-    return LoadedArtifact(model.eval(), model_config, preprocess_config, manifest)
+
+    # 5. the stage fields (frozen / calibrated) must be consistent with the weights and each other
+    calibration = _check_stage(manifest, entry["sha256"])
+    return LoadedArtifact(model.eval(), model_config, preprocess_config, manifest, calibration)
 
 
 def _embedding_width(model: PatchcoreModel) -> int:
     """Feature size of one patch: the summed channel count of the selected layers."""
     return int(sum(model.feature_extractor.out_dims))
+
+
+# --- stages: frozen and calibrated ---------------------------------------------------------
+
+
+def canonical_sha256(data: object) -> str:
+    """SHA-256 of the canonical JSON form (sorted keys, no spaces) of plain data."""
+    text = json.dumps(data, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    return hashlib.sha256(text.encode()).hexdigest()
+
+
+def _settings_ok(settings: object) -> bool:
+    return (
+        isinstance(settings, dict)
+        and set(SETTING_KEYS) <= set(settings)
+        and all(
+            isinstance(settings[k], int | float) and not isinstance(settings[k], bool)
+            for k in SETTING_KEYS
+        )
+    )
+
+
+def _check_stage(manifest: dict[str, object], weights_sha256: str) -> Calibration | None:
+    """Check the ``stage``, ``freeze`` and ``calibration`` fields; return the calibration if any.
+
+    A calibration block that does not match the weights it sits next to, the settings fixed at
+    freeze time, or itself is refused. This catches a block copied from another model, an edited
+    threshold or score, and settings changed after the freeze. A person who edits the block and
+    also recomputes every hash can not be detected by hashes stored in the same folder.
+    """
+    stage = manifest.get("stage")
+    has_freeze, has_calibration = "freeze" in manifest, "calibration" in manifest
+    if stage is None:
+        _require(not has_freeze and not has_calibration, "Manifest has stage data but no 'stage'")
+        return None
+    _require(stage in (STAGE_FROZEN, STAGE_CALIBRATED), f"Unknown artifact stage {stage!r}")
+
+    freeze = manifest.get("freeze")
+    _require(isinstance(freeze, dict), "A frozen artifact needs a 'freeze' block")
+    _require(
+        isinstance(freeze.get("version"), str) and bool(freeze["version"]),
+        "The 'freeze' block has no version",
+    )
+    _require(_settings_ok(freeze.get("frozen_settings")), "The frozen settings are incomplete")
+    source = freeze.get("source")
+    _require(
+        isinstance(source, dict) and source.get("weights_sha256") == weights_sha256,
+        "The weights are not the ones that were frozen (SHA-256 differs from the freeze block)",
+    )
+
+    if stage == STAGE_FROZEN:
+        _require(not has_calibration, "A frozen (not calibrated) artifact has a calibration block")
+        return None
+
+    entry = manifest.get("calibration")
+    _require(isinstance(entry, dict), "A calibrated artifact needs a 'calibration' block")
+    block = entry.get("block")
+    _require(isinstance(block, dict), "The calibration block is missing")
+    try:
+        calibration = Calibration.from_dict(block)
+    except CalibrationError as error:
+        raise ArtifactError(str(error)) from error
+    _require(
+        entry.get("block_sha256") == canonical_sha256(block),
+        "The calibration block was changed after it was written (its SHA-256 differs)",
+    )
+    _require(
+        entry.get("weights_sha256") == weights_sha256,
+        "The calibration was made for different weights than this artifact holds",
+    )
+    frozen = freeze["frozen_settings"]
+    used = {
+        "alpha": calibration.alpha,
+        "lower_percentile": calibration.pixel.lower_percentile,
+        "highlight_percentile": calibration.pixel.highlight_percentile,
+        "upper_multiple": calibration.pixel.upper_multiple,
+    }
+    _require(
+        all(float(frozen[k]) == used[k] for k in SETTING_KEYS),
+        "The calibration used settings that differ from the ones fixed at freeze time",
+    )
+    inputs = entry.get("inputs")
+    _require(
+        isinstance(inputs, dict)
+        and inputs.get("group") == "calib"
+        and inputs.get("n") == calibration.n,
+        "The calibration inputs do not describe the stored scores (group 'calib', same n)",
+    )
+    _require(
+        inputs.get("preprocessing_version") == manifest["preprocessing"].get("version"),  # type: ignore[union-attr]
+        "The calibration images were prepared with a different preprocessing version",
+    )
+    return calibration
+
+
+def _new_folder(path: Path) -> None:
+    if path.exists() and any(path.iterdir()):
+        raise ArtifactError(f"{path} already exists; artifacts are never overwritten")
+    path.mkdir(parents=True, exist_ok=True)
+
+
+def _copy_weights(source: Path, target: Path, expected_sha256: str) -> None:
+    shutil.copyfile(source / MODEL_FILE, target / MODEL_FILE)
+    if _file_sha256(target / MODEL_FILE) != expected_sha256:
+        raise ArtifactError("The copied weights do not match the original (SHA-256 differs)")
+
+
+def _write_manifest(directory: Path, manifest: dict[str, object]) -> None:
+    (directory / MANIFEST_FILE).write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+
+
+def freeze_artifact(
+    source_dir: str | Path, out_dir: str | Path, version: str, frozen_settings: dict[str, object],
+    details: dict[str, object] | None = None,
+) -> dict[str, object]:  # fmt: skip
+    """Copy a verified, fitted artifact to a new folder and mark it frozen. Returns the manifest.
+
+    ``frozen_settings`` are the calibration settings fixed in advance (``SETTING_KEYS`` plus any
+    notes); calibration later has to use exactly these. The weights are copied byte for byte and
+    their hash is checked. The source folder is not changed. Only a fitted artifact (no stage) can
+    be frozen.
+    """
+    source, out = Path(source_dir), Path(out_dir)
+    loaded = load_artifact(source)  # verifies the source completely
+    _require("stage" not in loaded.manifest, "Only a fitted artifact can be frozen")
+    _require(bool(version), "A version is needed")
+    _require(_settings_ok(frozen_settings), f"frozen_settings needs numbers for {SETTING_KEYS}")
+    _new_folder(out)
+    weights_sha256 = loaded.manifest["files"][MODEL_FILE]["sha256"]  # type: ignore[index]
+    _copy_weights(source, out, weights_sha256)
+    manifest = copy.deepcopy(loaded.manifest)
+    manifest["stage"] = STAGE_FROZEN
+    manifest["freeze"] = {
+        "version": version,
+        "frozen_settings": frozen_settings,
+        "source": {
+            "weights_sha256": weights_sha256,
+            "manifest_sha256": _file_sha256(source / MANIFEST_FILE),
+        },
+        **(details or {}),
+    }
+    _write_manifest(out, manifest)
+    load_artifact(out)  # the new folder must load cleanly
+    return manifest
+
+
+def calibrate_artifact(
+    frozen_dir: str | Path, out_dir: str | Path, calibration: Calibration,
+    inputs: dict[str, object],
+) -> dict[str, object]:  # fmt: skip
+    """Copy a frozen artifact to a new folder with a calibration block. Returns the manifest.
+
+    ``calibration`` must have been made with the settings fixed at freeze time. ``inputs`` says
+    what was scored: ``group`` ("calib"), ``n``, ``preprocessing_version`` and whatever the caller
+    wants recorded (list hashes). The weights are copied byte for byte; the frozen folder is not
+    changed.
+    """
+    frozen, out = Path(frozen_dir), Path(out_dir)
+    loaded = load_artifact(frozen)
+    _require(
+        loaded.manifest.get("stage") == STAGE_FROZEN, "Only a frozen artifact can be calibrated"
+    )
+    _require(isinstance(inputs, dict), "inputs must be a dict")
+    _new_folder(out)
+    weights_sha256 = loaded.manifest["files"][MODEL_FILE]["sha256"]  # type: ignore[index]
+    block = calibration.to_dict()
+    manifest = copy.deepcopy(loaded.manifest)
+    manifest["stage"] = STAGE_CALIBRATED
+    manifest["calibration"] = {
+        "block": block,
+        "block_sha256": canonical_sha256(block),
+        "weights_sha256": weights_sha256,
+        "frozen_manifest_sha256": _file_sha256(frozen / MANIFEST_FILE),
+        "inputs": inputs,
+    }
+    try:
+        _check_stage(manifest, weights_sha256)  # refuse before anything is written
+    except ArtifactError:
+        out.rmdir()
+        raise
+    _copy_weights(frozen, out, weights_sha256)
+    _write_manifest(out, manifest)
+    load_artifact(out)
+    return manifest

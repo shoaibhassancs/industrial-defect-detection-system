@@ -304,6 +304,7 @@ dependencies = [
     { name = "huggingface-hub" },
     { name = "pyyaml" },
     { name = "safetensors" },
+    { name = "scikit-learn" },
     { name = "timm" },
     { name = "torch" },
 ]
@@ -314,6 +315,7 @@ requires-dist = [
     { name = "huggingface-hub" },
     { name = "pyyaml" },
     { name = "safetensors" },
+    { name = "scikit-learn" },
     { name = "timm" },
     { name = "torch" },
 ]

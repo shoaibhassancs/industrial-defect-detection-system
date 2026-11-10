@@ -12,6 +12,8 @@ dependencies = [
     "timm",
     "huggingface-hub",
     "safetensors",
+    # Imported directly by defect_ml's own code (metrics.py: AUROC and average precision).
+    "scikit-learn",
 ]
 
 [tool.uv.sources]

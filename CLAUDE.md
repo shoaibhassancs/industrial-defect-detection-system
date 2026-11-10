@@ -9,6 +9,7 @@ Guidance for Claude Code when working in this repository. Project background: [S
 - Never move to the next step on your own. Silence or a general acknowledgement is not approval.
 - If something is ambiguous between discussing and implementing, ask.
 - Explain in plain, simple English. Explain technical terms when they first appear.
+- **`PLAN.md` is a working plan, not a rulebook** (owner's instruction, 2026-11-10). If implementation shows that a planned step no longer fits, explain the mismatch and recommend a change only when it would genuinely improve the project. Do not change the plan for the sake of changing it, and do not follow outdated plan text blindly. The approval rule below still applies: propose first; when a change is agreed, update the plan and related records.
 
 ## Hard rules
 - **No git actions** unless the owner explicitly asks: no `git init`, commit, push, or creating a remote. The GitHub repository is intentionally public (owner's statement, 2026-11-10) and the project is noncommercial. Never change the repository's visibility.
@@ -41,6 +42,7 @@ Guidance for Claude Code when working in this repository. Project background: [S
 - Never commit the dataset (`data/`), model artifacts, or secrets.
 
 ## Tooling status
-- Ruff and pytest are set up (step 0.3). Use `make lint`, `make format`, `make test`, `make setup`. Run `make lint` and `make test` after code changes. `make test` runs `core/tests` and `scripts/data/tests`. Strict Mypy and pre-commit are deferred.
+- Ruff and pytest are set up (step 0.3). Use `make lint`, `make format`, `make test`, `make setup`. Run `make lint` and `make test` after code changes. `make test` runs `core/tests`, `scripts/data/tests` and `scripts/tests`. Strict Mypy and pre-commit are deferred.
+- **Declare what you import.** Every third-party package that Python code in this repository imports directly must be declared: in `core/pyproject.toml` when `defect_core`'s own code uses it, otherwise in the root `[dependency-groups]` group `scripts` (installed by default). Do not rely on a package arriving indirectly through another. `scripts/tests/test_declared_imports.py` enforces this. After changing dependencies, run `uv lock` and commit `pyproject.toml` and `uv.lock` together, because CI runs with `UV_LOCKED=1`.
 - CI is introduced gradually. Stage 1 (Python lint and test on Linux) is in `.github/workflows/ci.yml` (step 0.5). Its first run on GitHub (commit `90624b0`, 2026-11-09) concluded `success` on Ubuntu x86_64, with every step passing (verified from GitHub's run and step results; the raw logs were not readable without a login). Later stages arrive with their components (backend and Docker in Phase 5, frontend in Phase 6, end-to-end in Phase 11).
 - The GitHub remote exists (`origin`). Do not push, or change anything on GitHub, unless the owner asks.

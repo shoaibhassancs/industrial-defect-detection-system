@@ -11,11 +11,20 @@ resolution-markers = [
 members = [
     "defect-core",
 ]
+default-groups = ["dev", "scripts"]
 
 [manifest.dependency-groups]
 dev = [
     { name = "pytest" },
     { name = "ruff" },
+]
+scripts = [
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "pillow" },
+    { name = "safetensors" },
+    { name = "scipy" },
+    { name = "torch" },
 ]
 
 [[package]]
@@ -268,10 +277,20 @@ version = "0.0.0"
 source = { editable = "core" }
 dependencies = [
     { name = "anomalib", extra = ["cpu"] },
+    { name = "numpy" },
+    { name = "pillow" },
+    { name = "torch" },
+    { name = "torchvision" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "anomalib", extras = ["cpu"], specifier = ">=2.7.0" }]
+requires-dist = [
+    { name = "anomalib", extras = ["cpu"], specifier = ">=2.7.0" },
+    { name = "numpy" },
+    { name = "pillow" },
+    { name = "torch" },
+    { name = "torchvision" },
+]
 
 [[package]]
 name = "docstring-parser"

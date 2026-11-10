@@ -1,0 +1,209 @@
+{
+ "eda_version": 1,
+ "category": "bottle",
+ "split_file": "splits/bottle.json",
+ "split_lists_sha256": "9e077545997de454131f8060af32936e469aba9a949b6ae93d3967bce9502291",
+ "images": {
+  "fit": 167,
+  "calib": 42,
+  "sizes": {
+   "900x900": 209
+  },
+  "modes": {
+   "RGB": 209
+  }
+ },
+ "files_opened": {
+  "train_good": 209,
+  "any_other_folder": 0
+ },
+ "inputs_match_verified_manifest": true,
+ "metrics": {
+  "luma_mean": {
+   "fit": {
+    "n": 167,
+    "mean": 136.3141,
+    "std": 1.3756,
+    "min": 133.372,
+    "p5": 134.1562,
+    "median": 136.1622,
+    "p95": 138.6538,
+    "max": 139.5464
+   },
+   "calib": {
+    "n": 42,
+    "mean": 136.4248,
+    "std": 1.4487,
+    "min": 133.4576,
+    "p5": 134.3904,
+    "median": 136.2501,
+    "p95": 138.8076,
+    "max": 139.198
+   },
+   "ks_statistic": 0.1002,
+   "ks_p_value": 0.846,
+   "outliers_all_209": []
+  },
+  "luma_std": {
+   "fit": {
+    "n": 167,
+    "mean": 92.8991,
+    "std": 0.532,
+    "min": 91.2337,
+    "p5": 91.9944,
+    "median": 92.9102,
+    "p95": 93.7501,
+    "max": 94.2972
+   },
+   "calib": {
+    "n": 42,
+    "mean": 92.875,
+    "std": 0.4903,
+    "min": 92.0467,
+    "p5": 92.2062,
+    "median": 92.7892,
+    "p95": 93.784,
+    "max": 94.1492
+   },
+   "ks_statistic": 0.1111,
+   "ks_p_value": 0.7513,
+   "outliers_all_209": []
+  },
+  "mean_r": {
+   "fit": {
+    "n": 167,
+    "mean": 136.5083,
+    "std": 1.4651,
+    "min": 133.3128,
+    "p5": 134.1601,
+    "median": 136.3806,
+    "p95": 139.0444,
+    "max": 140.0453
+   },
+   "calib": {
+    "n": 42,
+    "mean": 136.614,
+    "std": 1.54,
+    "min": 133.3762,
+    "p5": 134.4625,
+    "median": 136.4615,
+    "p95": 139.0035,
+    "max": 139.7035
+   },
+   "ks_statistic": 0.0999,
+   "ks_p_value": 0.8487,
+   "outliers_all_209": []
+  },
+  "mean_g": {
+   "fit": {
+    "n": 167,
+    "mean": 135.5549,
+    "std": 1.3867,
+    "min": 132.5899,
+    "p5": 133.3887,
+    "median": 135.3406,
+    "p95": 137.9197,
+    "max": 138.8466
+   },
+   "calib": {
+    "n": 42,
+    "mean": 135.6744,
+    "std": 1.4546,
+    "min": 132.7609,
+    "p5": 133.6071,
+    "median": 135.4223,
+    "p95": 138.0608,
+    "max": 138.4725
+   },
+   "ks_statistic": 0.0942,
+   "ks_p_value": 0.8916,
+   "outliers_all_209": []
+  },
+  "mean_b": {
+   "fit": {
+    "n": 167,
+    "mean": 139.7136,
+    "std": 1.1485,
+    "min": 137.2269,
+    "p5": 137.8923,
+    "median": 139.5706,
+    "p95": 141.6346,
+    "max": 142.7876
+   },
+   "calib": {
+    "n": 42,
+    "mean": 139.7926,
+    "std": 1.2341,
+    "min": 137.2589,
+    "p5": 138.22,
+    "median": 139.5598,
+    "p95": 141.8745,
+    "max": 142.3012
+   },
+   "ks_statistic": 0.0766,
+   "ks_p_value": 0.9778,
+   "outliers_all_209": []
+  },
+  "sharpness": {
+   "fit": {
+    "n": 167,
+    "mean": 1.7571,
+    "std": 0.0618,
+    "min": 1.6252,
+    "p5": 1.6683,
+    "median": 1.7591,
+    "p95": 1.8533,
+    "max": 1.9308
+   },
+   "calib": {
+    "n": 42,
+    "mean": 1.7584,
+    "std": 0.0641,
+    "min": 1.6203,
+    "p5": 1.6463,
+    "median": 1.7533,
+    "p95": 1.8427,
+    "max": 1.9138
+   },
+   "ks_statistic": 0.1392,
+   "ks_p_value": 0.4874,
+   "outliers_all_209": []
+  },
+  "file_bytes": {
+   "fit": {
+    "n": 167,
+    "mean": 534958.8323,
+    "std": 4682.2493,
+    "min": 524159.0,
+    "p5": 527157.5,
+    "median": 535106.0,
+    "p95": 542141.0,
+    "max": 547692.0
+   },
+   "calib": {
+    "n": 42,
+    "mean": 534958.4762,
+    "std": 4784.6768,
+    "min": 525273.0,
+    "p5": 525754.55,
+    "median": 535334.5,
+    "p95": 542103.2,
+    "max": 543125.0
+   },
+   "ks_statistic": 0.1517,
+   "ks_p_value": 0.3794,
+   "outliers_all_209": []
+  }
+ },
+ "fit_vs_calib_summary": {
+  "tests_run": 6,
+  "tests_run_note": "the six image metrics; file_bytes is reported for information only",
+  "bonferroni_level": 0.0083,
+  "metrics_below_bonferroni_level": [],
+  "smallest_ks_p_value": 0.4874,
+  "reading": "no strong evidence that fit and calib differ on these metrics",
+  "caution": "A rough warning check, not a proof of equivalence. With 42 calib images a KS test has little power, p-values are not corrected beyond the stated Bonferroni level, and the metrics are simple global numbers, not what the model sees."
+ },
+ "outlier_rule": "robust z-score (median and MAD) above 4.0",
+ "not_the_models_preprocessing": true
+}

@@ -74,12 +74,15 @@ def test_scoring_with_an_empty_bank_is_rejected() -> None:
 
 def test_fit_builds_a_smaller_bank_and_leaves_eval_mode() -> None:
     model = build_model(CONFIG, pre_trained=False)
-    collected = fit_memory_bank(model, [_images(4, 1), _images(2, 2)], 0.1, seed=0)
+    stats = fit_memory_bank(model, [_images(4, 1), _images(2, 2)], 0.1, seed=0)
+    collected = stats.patch_features
     assert not model.training
     assert model.embedding_store == []
     # 6 images were used; each gives (SIZE/8)^2 patch features (layer2 has stride 8)
     assert collected == 6 * (SIZE // 8) ** 2
     assert model.memory_bank.shape[0] == pytest.approx(0.1 * collected, abs=1)
+    assert stats.memory_bank_shape == tuple(model.memory_bank.shape)
+    assert stats.features_seconds >= 0 and stats.coreset_seconds >= 0
 
 
 def test_infer_returns_scores_and_maps_with_expected_shapes() -> None:

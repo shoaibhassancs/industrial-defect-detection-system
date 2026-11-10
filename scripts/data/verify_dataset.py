@@ -47,13 +47,10 @@ from collections import Counter
 from datetime import UTC, datetime
 from pathlib import Path
 
+from defect_ml.data.mvtec import CATEGORIES, assert_training_path, sha256_of
 from PIL import Image
 
 SCRIPT_VERSION = "1"
-CATEGORIES = [
-    "bottle", "cable", "capsule", "carpet", "grid", "hazelnut", "leather", "metal_nut",
-    "pill", "screw", "tile", "toothbrush", "transistor", "wood", "zipper",
-]  # fmt: skip
 EXPECTED_TOP_LEVEL = {"train", "test", "ground_truth", "license.txt", "readme.txt"}
 MASK_SUFFIX = "_mask"
 
@@ -143,28 +140,14 @@ def scan_category(cat_dir: Path) -> dict:
 
 
 # --------------------------------------------------------------------------------------
-# Deep check of TRAINING images only
+# Deep check of TRAINING images only (the guard and sha256_of are defined once, in
+# defect_ml.data.mvtec)
 # --------------------------------------------------------------------------------------
-def assert_allowed(data_dir: Path, path: Path) -> None:
-    """Raise unless `path` is inside <category>/train/good. This is the sealed-test-set guard."""
-    parts = path.resolve().relative_to(data_dir.resolve()).parts
-    if len(parts) < 4 or parts[1:3] != ("train", "good"):
-        raise PermissionError(f"refusing to open a file outside train/good: {'/'.join(parts)}")
-
-
-def sha256_of(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1 << 20), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
-
-
 def check_training_images(data_dir: Path, category: str, names: list[str]) -> dict:
     records, errors = [], []
     for name in names:
         path = data_dir / category / "train" / "good" / name
-        assert_allowed(data_dir, path)
+        assert_training_path(data_dir, path)
         rel = f"{category}/train/good/{name}"
         try:
             with Image.open(path) as image:

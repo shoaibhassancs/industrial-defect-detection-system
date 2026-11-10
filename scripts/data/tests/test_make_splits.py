@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 
 import pytest
+from defect_ml.data.splits import n_calib_for
 
 SCRIPT = Path(__file__).resolve().parents[1] / "make_splits.py"
 spec = importlib.util.spec_from_file_location("make_splits", SCRIPT)
@@ -49,10 +50,10 @@ def args_for(data: Path, tmp: Path, **extra) -> argparse.Namespace:
 
 
 def test_rounding_matches_the_plan() -> None:
-    assert ms.n_calib_for(209) == 42  # bottle: 167 fit + 42 calib
-    assert ms.n_calib_for(10) == 2
-    assert ms.n_calib_for(60) == 12
-    assert ms.n_calib_for(0) == 0
+    assert n_calib_for(209) == 42  # bottle: 167 fit + 42 calib
+    assert n_calib_for(10) == 2
+    assert n_calib_for(60) == 12
+    assert n_calib_for(0) == 0
 
 
 def test_split_is_a_valid_partition_and_deterministic(tmp_path: Path) -> None:

@@ -10,6 +10,7 @@ resolution-markers = [
 [manifest]
 members = [
     "defect-core",
+    "defect-ml",
 ]
 default-groups = ["dev", "scripts"]
 
@@ -292,6 +293,29 @@ requires-dist = [
     { name = "safetensors" },
     { name = "torch" },
     { name = "torchvision" },
+]
+
+[[package]]
+name = "defect-ml"
+version = "0.0.0"
+source = { editable = "ml" }
+dependencies = [
+    { name = "defect-core" },
+    { name = "huggingface-hub" },
+    { name = "pyyaml" },
+    { name = "safetensors" },
+    { name = "timm" },
+    { name = "torch" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "defect-core", editable = "core" },
+    { name = "huggingface-hub" },
+    { name = "pyyaml" },
+    { name = "safetensors" },
+    { name = "timm" },
+    { name = "torch" },
 ]
 
 [[package]]

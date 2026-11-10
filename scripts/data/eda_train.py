@@ -3,8 +3,9 @@
 What it does
 ------------
 * Reads `splits/<category>.json` (made by make_splits.py) and opens ONLY the training images that
-  list names: the `fit` and `calib` groups. Every path goes through the same guard as
-  verify_dataset.py, which refuses anything outside `<category>/train/good`.
+  list names: the `fit` and `calib` groups. Every path goes through the single training-data guard
+  (`defect_ml.data.mvtec.assert_training_path`), which refuses anything outside
+  `<category>/train/good`.
 * Per image it measures brightness (mean and spread), the mean of each colour channel, a simple
   sharpness number (mean absolute difference between neighbouring pixels), and the file size.
 * It compares the `fit` group with the `calib` group, metric by metric. The comparison is a ROUGH
@@ -38,9 +39,9 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-import make_splits  # sibling script: split validation
 import numpy as np
-import verify_dataset  # sibling script: the train/good guard and sha256_of
+from defect_ml.data.mvtec import CATEGORIES, assert_training_path, sha256_of
+from defect_ml.data.splits import validate_split
 from PIL import Image
 from scipy import stats
 
@@ -143,7 +144,7 @@ def run(args: argparse.Namespace) -> int:
     category = args.category
     split_path = Path(args.split_dir) / f"{category}.json"
     split = json.loads(split_path.read_text())
-    problems = make_splits.validate_split(split)
+    problems = validate_split(split)
     if problems:
         print(f"REFUSING to run: {split_path} is inconsistent: {problems}", file=sys.stderr)
         return 1
@@ -167,10 +168,10 @@ def run(args: argparse.Namespace) -> int:
         names[group], thumbs[group] = [], []
         for rel in split[group]:
             path = data_dir / category / rel
-            verify_dataset.assert_allowed(data_dir, path)  # sealed-test-set guard
+            assert_training_path(data_dir, path)  # the training-data guard
             if manifest_hashes is not None:
                 key = f"{category}/{rel}"
-                if manifest_hashes.get(key) != verify_dataset.sha256_of(path):
+                if manifest_hashes.get(key) != sha256_of(path):
                     hash_mismatches.append(rel)
             values, thumb, (width, height, mode) = measure(path, len(thumbs[group]) < SHEET_COUNT)
             opened += 1
@@ -267,7 +268,7 @@ def run(args: argparse.Namespace) -> int:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--data-dir", default="data/raw/mvtec-ad")
-    parser.add_argument("--category", default="bottle", choices=verify_dataset.CATEGORIES)
+    parser.add_argument("--category", default="bottle", choices=CATEGORIES)
     parser.add_argument("--split-dir", default="splits")
     parser.add_argument("--manifest", default="data/data_manifest.json")
     parser.add_argument("--out", default=None, help="default: experiments/eda_<category>.json")

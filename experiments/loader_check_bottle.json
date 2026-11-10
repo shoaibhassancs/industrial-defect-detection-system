@@ -1,0 +1,67 @@
+{
+ "check": "fit/calib loader on real training images",
+ "category": "bottle",
+ "result": "PASS",
+ "split_file_sha256_of_lists": "9e077545997de454131f8060af32936e469aba9a949b6ae93d3967bce9502291",
+ "groups": {
+  "fit": {
+   "images": 167,
+   "tensor_shape_per_image": [
+    [
+     3,
+     256,
+     256
+    ]
+   ],
+   "dtypes": [
+    "torch.float32"
+   ],
+   "all_finite": true,
+   "min": -1.6273,
+   "max": 2.64,
+   "channel_mean": [
+    0.2198,
+    0.3374,
+    0.6307
+   ],
+   "channel_std": [
+    1.5966,
+    1.6338,
+    1.5521
+   ]
+  },
+  "calib": {
+   "images": 42,
+   "tensor_shape_per_image": [
+    [
+     3,
+     256,
+     256
+    ]
+   ],
+   "dtypes": [
+    "torch.float32"
+   ],
+   "all_finite": true,
+   "min": -1.626,
+   "max": 2.64,
+   "channel_mean": [
+    0.2216,
+    0.3395,
+    0.632
+   ],
+   "channel_std": [
+    1.5961,
+    1.6334,
+    1.5519
+   ]
+  }
+ },
+ "audit": {
+  "method": "sys.addaudithook: open, os.listdir and os.scandir events during the run",
+  "files_opened_inside_dataset_folder": 209,
+  "each_listed_training_file_opened_exactly_once": true,
+  "files_opened_outside_the_listed_training_files": [],
+  "directory_listings_inside_dataset_folder": 0
+ }
+}

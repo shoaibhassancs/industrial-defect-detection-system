@@ -17,6 +17,7 @@ Saving and loading a fitted model is a separate step (``artifacts.py``, Phase 2 
 
 from __future__ import annotations
 
+import time
 from collections.abc import Iterable
 from dataclasses import dataclass
 
@@ -44,6 +45,16 @@ class ModelConfig:
         }
 
 
+@dataclass(frozen=True)
+class FitStats:
+    """What a memory-bank fit did: counts, the memory bank's shape, and the time of each stage."""
+
+    patch_features: int  # patch features collected before subsampling
+    memory_bank_shape: tuple[int, int]
+    features_seconds: float  # train-mode pass over the images
+    coreset_seconds: float  # coreset subsampling
+
+
 def build_model(config: ModelConfig, *, pre_trained: bool) -> PatchcoreModel:
     """Create a ``PatchcoreModel`` in eval mode with an empty memory bank.
 
@@ -65,13 +76,13 @@ def fit_memory_bank(
     batches: Iterable[torch.Tensor],
     coreset_ratio: float,
     seed: int,
-) -> int:
+) -> FitStats:
     """Build the memory bank from normal images and leave the model in eval mode.
 
     ``batches`` yields preprocessed tensors of shape (B, 3, H, W) (see ``preprocessing``). Both
     ``torch`` and ``numpy`` are seeded first, because the coreset sampler uses a random projection
-    that torch's seed alone does not control (PLAN.md 9.3). Returns the number of patch features
-    collected before subsampling. The backbone weights are not changed by fitting.
+    that torch's seed alone does not control (PLAN.md 9.3). Returns ``FitStats`` (patch count,
+    memory bank shape, seconds per stage). The backbone weights are not changed by fitting.
     """
     if not 0 < coreset_ratio <= 1:
         raise ValueError(f"coreset_ratio must be in (0, 1], got {coreset_ratio}")
@@ -83,19 +94,24 @@ def fit_memory_bank(
     model.train()
     collected = 0
     try:
+        started = time.perf_counter()
         with torch.no_grad():
             for batch in batches:
                 _check_batch(batch)
                 collected += model(batch).shape[0]
         if collected == 0:
             raise ValueError("fit_memory_bank received no images")
+        features_seconds = time.perf_counter() - started
+        started = time.perf_counter()
         model.subsample_embedding(sampling_ratio=coreset_ratio)
+        coreset_seconds = time.perf_counter() - started
     except BaseException:
         model.embedding_store.clear()
         raise
     finally:
         model.eval()
-    return collected
+    rows, width = model.memory_bank.shape
+    return FitStats(collected, (int(rows), int(width)), features_seconds, coreset_seconds)
 
 
 def infer(model: PatchcoreModel, batch: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:

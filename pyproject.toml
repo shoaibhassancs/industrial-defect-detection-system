@@ -1,7 +1,7 @@
 # Root of the uv workspace (virtual root: no project of its own).
-# Members are added only when they are first needed: core/ now, ml/ when Phase 2 begins, backend/ in Phase 5.
+# Members are added only when they are first needed: core/, ml/ (since Phase 2 step 5 groundwork), backend/ in Phase 5.
 [tool.uv.workspace]
-members = ["core"]
+members = ["core", "ml"]
 
 # Groups installed by default, so `uv sync --all-packages` (make setup, CI) includes both.
 [tool.uv]
@@ -15,7 +15,8 @@ dev = [
 ]
 # Packages imported DIRECTLY by the repository's scripts/ and tests (feasibility experiments,
 # dataset tools, tests). Declared here instead of relying on them arriving through anomalib.
-# When defect_core's own code imports one of them (Phase 2), declare it in core/pyproject.toml too.
+# When defect_core's or defect_ml's own code imports one of them, declare it in that package's
+# pyproject.toml too.
 scripts = [
     "numpy",
     "pillow",
@@ -36,5 +37,5 @@ extend-exclude = [".venv"]
 select = ["E", "W", "F", "I", "UP", "B"]
 
 [tool.pytest.ini_options]
-testpaths = ["core/tests", "scripts/data/tests", "scripts/tests"]
+testpaths = ["core/tests", "ml/tests", "scripts/data/tests", "scripts/tests"]
 addopts = "-ra"

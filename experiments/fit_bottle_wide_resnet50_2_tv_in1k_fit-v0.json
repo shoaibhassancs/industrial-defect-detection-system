@@ -1,0 +1,175 @@
+{
+ "step": "Phase 2 step 5: fit on the `fit` split (real images)",
+ "run_name": "bottle_wide_resnet50_2_tv_in1k_fit-v0",
+ "status": "fitted; NOT frozen and NOT calibrated; no test image or mask involved",
+ "settings": {
+  "run_name": "bottle_wide_resnet50_2_tv_in1k_fit-v0",
+  "category": "bottle",
+  "model": {
+   "backbone": "wide_resnet50_2.tv_in1k",
+   "layers": [
+    "layer2",
+    "layer3"
+   ],
+   "num_neighbors": 9,
+   "coreset_ratio": 0.1
+  },
+  "weights": {
+   "pretrained": true
+  },
+  "fit": {
+   "seed": 0,
+   "batch_size": 4,
+   "torch_threads": 4
+  },
+  "paths": {
+   "data_dir": "data/raw/mvtec-ad",
+   "split_dir": "splits",
+   "manifest": "data/data_manifest.json",
+   "artifact_dir": "artifacts",
+   "record_dir": "experiments"
+  },
+  "guard": {
+   "max_swap_used_mb": 5000,
+   "min_free_disk_gib": 7
+  }
+ },
+ "device": "cpu",
+ "torch_threads": 4,
+ "timings_seconds": {
+  "features": 20.01,
+  "coreset": 334.57,
+  "fit_total": 354.58
+ },
+ "peak_rss_mb": 1906.7,
+ "patch_features": 171008,
+ "memory_bank": {
+  "shape": [
+   17100,
+   1536
+  ],
+  "dtype": "torch.float32",
+  "mb": 100.2
+ },
+ "artifact": {
+  "path": "artifacts/bottle_wide_resnet50_2_tv_in1k_fit-v0",
+  "files_bytes": {
+   "manifest.json": 40561,
+   "model.safetensors": 204703520
+  },
+  "git_ignored": true
+ },
+ "reload_check": {
+  "images": 2,
+  "outputs_bit_identical": true
+ },
+ "weights": {
+  "timm_name": "wide_resnet50_2.tv_in1k",
+  "hf_hub_id": "timm/wide_resnet50_2.tv_in1k",
+  "file": "model.safetensors",
+  "cache_revision": "343c5fa59ca8a131e0cdf42144a641b36a0387c2",
+  "sha256": "df6fb6c4824769769de18e14088475fd6ee94236849aa4e5d8022ba9d9a9a16c",
+  "bytes": 275835296,
+  "original_source_url": "https://download.pytorch.org/models/wide_resnet50_2-95faca4d.pth",
+  "tensors_compared_with_model": 258,
+  "tensors_differing": 0,
+  "terms": "see docs/data.md; the license field in timm's metadata is 'bsd-3-clause' (a statement by the model card, not checked here, and separate from the terms of the ImageNet training data)"
+ },
+ "data_access": {
+  "group_read": "fit",
+  "images_loaded": 167,
+  "method": "sys.addaudithook: open, os.listdir, os.scandir during model build and fit",
+  "files_opened_inside_dataset_folder": 167,
+  "exactly_the_listed_fit_files_each_once": true,
+  "directory_listings_inside_dataset_folder": 0
+ },
+ "provenance": {
+  "run_name": "bottle_wide_resnet50_2_tv_in1k_fit-v0",
+  "category": "bottle",
+  "group": "fit",
+  "fit_images": 167,
+  "seed": 0,
+  "batch_size": 4,
+  "split_lists_sha256": "9e077545997de454131f8060af32936e469aba9a949b6ae93d3967bce9502291",
+  "data_manifest_sha256": "db95f8235aa5c81ab74ec6abbacb3ec427b4b0a27555286aad52f98ed52e26e2",
+  "weights": {
+   "timm_name": "wide_resnet50_2.tv_in1k",
+   "hf_hub_id": "timm/wide_resnet50_2.tv_in1k",
+   "file": "model.safetensors",
+   "cache_revision": "343c5fa59ca8a131e0cdf42144a641b36a0387c2",
+   "sha256": "df6fb6c4824769769de18e14088475fd6ee94236849aa4e5d8022ba9d9a9a16c",
+   "bytes": 275835296,
+   "original_source_url": "https://download.pytorch.org/models/wide_resnet50_2-95faca4d.pth",
+   "tensors_compared_with_model": 258,
+   "tensors_differing": 0,
+   "terms": "see docs/data.md; the license field in timm's metadata is 'bsd-3-clause' (a statement by the model card, not checked here, and separate from the terms of the ImageNet training data)"
+  },
+  "git": {
+   "commit": "da0d7b72d56207c0b4393b9cf41b5e01da4bda44",
+   "uncommitted_changes": true
+  },
+  "status": "fitted; NOT frozen and NOT calibrated"
+ },
+ "versions": {
+  "python": "3.12.16",
+  "torch": "2.15.0",
+  "timm": "1.0.31",
+  "anomalib": "2.7.0",
+  "platform": "macOS-15.2-arm64-arm-64bit"
+ },
+ "system_before": {
+  "time_utc": "2026-11-10T02:53:24+00:00",
+  "swap_used_mb": 2267.56,
+  "free_disk_gib": 13.05,
+  "load_average": [
+   3.3,
+   3.93,
+   3.29
+  ],
+  "memory_free_percentage": "System-wide memory free percentage: 50%",
+  "power": [
+   "Now drawing from 'AC Power'",
+   " -InternalBattery-0 (id=21102691)\t68%; charging; 1:49 remaining present: true"
+  ],
+  "thermal": [
+   "Note: No thermal warning level has been recorded",
+   "Note: No performance warning level has been recorded",
+   "Note: No CPU power status has been recorded"
+  ]
+ },
+ "system_after": {
+  "time_utc": "2026-11-10T03:00:35+00:00",
+  "swap_used_mb": 3633.69,
+  "free_disk_gib": 11.64,
+  "load_average": [
+   4.43,
+   5.68,
+   4.55
+  ],
+  "memory_free_percentage": "System-wide memory free percentage: 53%",
+  "power": [
+   "Now drawing from 'AC Power'",
+   " -InternalBattery-0 (id=21102691)\t71%; charging; 1:51 remaining present: true"
+  ],
+  "thermal": [
+   "Note: No thermal warning level has been recorded",
+   "Note: No performance warning level has been recorded",
+   "Note: No CPU power status has been recorded"
+  ]
+ },
+ "watchdog": {
+  "max_swap_used_mb_seen": 3997.8,
+  "min_free_disk_gib_seen": 11.28,
+  "limits": {
+   "swap_mb": 5000.0,
+   "free_disk_gib": 7.0
+  }
+ },
+ "manifest_sha256": "08a45625983271b47a388edfaf01054f10f8f453e214c25f1345d60f3af3fc71",
+ "limitations": [
+  "Timings include other apps and any swapping on this 8 GB Mac; see system_before.",
+  "Peak resident memory excludes memory the OS compressed or swapped out.",
+  "No calibration, threshold or held-out scoring was done: that is Phase 3.",
+  "The weight terms recorded here are what the model card states; they were not independently verified, and are separate from the ImageNet dataset terms."
+ ]
+}

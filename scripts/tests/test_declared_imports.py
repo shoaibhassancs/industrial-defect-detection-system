@@ -1,6 +1,7 @@
 """Every third-party package that the repository's Python files import directly must be declared.
 
-Declared means: listed in a root `[dependency-groups]` group or in `core/pyproject.toml`. Relying on
+Declared means: listed in a root `[dependency-groups]` group or in `core/pyproject.toml` or
+`ml/pyproject.toml`. Relying on
 a package arriving indirectly through another one can break a clean setup (CI, a fresh clone).
 """
 
@@ -14,7 +15,7 @@ from importlib.metadata import packages_distributions
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-FIRST_PARTY = {"defect_core"}  # our own package
+FIRST_PARTY = {"defect_core", "defect_ml"}  # our own packages
 # Scripts import their siblings by file name (scripts/data/*.py); these are not packages.
 LOCAL_MODULES = {p.stem for p in (REPO / "scripts").rglob("*.py")}
 
@@ -29,15 +30,16 @@ def requirement_name(spec: str) -> str:
 
 def declared_packages() -> set[str]:
     root = tomllib.loads((REPO / "pyproject.toml").read_text())
-    core = tomllib.loads((REPO / "core" / "pyproject.toml").read_text())
     specs = [s for group in root.get("dependency-groups", {}).values() for s in group]
-    specs += core["project"].get("dependencies", [])
+    for package in ("core", "ml"):
+        project = tomllib.loads((REPO / package / "pyproject.toml").read_text())
+        specs += project["project"].get("dependencies", [])
     return {requirement_name(s) for s in specs}
 
 
 def imported_top_level_modules() -> dict[str, list[str]]:
     found: dict[str, list[str]] = {}
-    for base in ("core", "scripts"):
+    for base in ("core", "ml", "scripts"):
         for path in (REPO / base).rglob("*.py"):
             for node in ast.walk(ast.parse(path.read_text())):
                 if isinstance(node, ast.Import):

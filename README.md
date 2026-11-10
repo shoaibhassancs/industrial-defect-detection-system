@@ -17,6 +17,9 @@ The model is **PatchCore** (PyTorch, via the anomalib library), fitted only on d
 - A fixed 80/20 split of the `bottle` training images into a "fit" group and a "calibration" group (`scripts/data/make_splits.py`, `splits/bottle.json`). It lists file names only.
 - A train-only look at those images (`scripts/data/eda_train.py`): simple brightness, colour and sharpness numbers, comparing the fit and calibration groups (a rough check, not a proof). It reads training images only.
 - Shared image preprocessing (`core/src/defect_core/preprocessing.py`) with tests on synthetic images. The PatchCore wrapper (`model.py`: build, fit, score) with tests on random data.
+- A second Python package, `ml/` (`defect_ml`): the single guard that lets data tools open only training images, the split rules, and a loader for the `fit` and `calib` images that checks every file against the verified manifest (`scripts/data/check_loader.py` checks it on the real `bottle` training images).
+- A fit program (`defect_ml/fit.py`, settings in `ml/configs/`) and the first two real fits on the `bottle` `fit` images; the weights are pinned by tag and recorded with their hashes (`docs/data.md`). The fitted models are not yet frozen or calibrated.
+- A serving-style benchmark (`defect_ml/benchmark.py`) of the fitted models: native macOS proxy measurements only; the container measurements are still open.
 - Rendering of results (`render.py`: fixed-scale inferno heatmap, overlay with outline, largest highlighted region, area fraction), tested with synthetic arrays.
 - The calibration arithmetic (`calibration.py`: conformal threshold, strict verdict rule, normal rank, heatmap levels), tested with synthetic numbers.
 - A resource measurement of fitting and scoring on this Mac with random data (`scripts/feasibility/f1_resources.py`).
@@ -42,6 +45,7 @@ On Linux, a GitHub Actions run (Ubuntu, x86_64, 2026-11-09, commit `90624b0`) in
 - [SCOPE.md](SCOPE.md): what the project is and is not.
 - [decisions.md](decisions.md): dated log of decisions and actions.
 - [docs/dev-environment.md](docs/dev-environment.md): machine, tools, and library versions.
+- [docs/adr/ADR-0002-model-and-serving.md](docs/adr/ADR-0002-model-and-serving.md): Checkpoint A, the rule that names the headline model and the frozen calibration settings.
 - [docs/data.md](docs/data.md): the dataset, its layout, citation, and what has been checked.
 - [DATA_LICENSE.md](DATA_LICENSE.md): dataset license and attribution, and what is and is not redistributed.
 

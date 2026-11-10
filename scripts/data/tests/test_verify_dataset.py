@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 
 import pytest
+from defect_ml.data.mvtec import assert_training_path, sha256_of
 from PIL import Image
 
 SCRIPT = Path(__file__).resolve().parents[1] / "verify_dataset.py"
@@ -89,13 +90,20 @@ def test_corrupt_training_image_is_reported(tmp_path: Path) -> None:
 
 def test_guard_refuses_files_outside_train_good(tmp_path: Path) -> None:
     data = make_dataset(tmp_path)
-    vd.assert_allowed(data, data / "bottle" / "train" / "good" / "000.png")  # allowed
+    assert_training_path(data, data / "bottle" / "train" / "good" / "000.png")  # allowed
     for forbidden in (
         data / "bottle" / "test" / "good" / "000.png",
         data / "bottle" / "ground_truth" / "crack" / "000_mask.png",
     ):
         with pytest.raises(PermissionError):
-            vd.assert_allowed(data, forbidden)
+            assert_training_path(data, forbidden)
+
+
+def test_the_script_uses_the_single_shared_guard() -> None:
+    """The guard is defined once, in defect_ml, and the script uses that same function."""
+    assert vd.assert_training_path is assert_training_path
+    assert vd.sha256_of is sha256_of
+    assert "def assert_training_path" not in SCRIPT.read_text()
 
 
 def test_manifest_is_deterministic(tmp_path: Path) -> None:

@@ -30,17 +30,15 @@ import os
 import sys
 from pathlib import Path
 
-SPLIT_VERSION = 1
-CALIB_FRACTION = 0.2
-DEFAULT_SEED = 0
-CATEGORIES = [
-    "bottle", "cable", "capsule", "carpet", "grid", "hazelnut", "leather", "metal_nut",
-    "pill", "screw", "tile", "toothbrush", "transistor", "wood", "zipper",
-]  # fmt: skip
-METHOD = (
-    "Rank the training files by SHA-256 of '<seed>:<category>:<file name>'. The first n_calib in "
-    "that ranking are `calib`, all others are `fit`. n_calib = round(0.2 * n). File names only; "
-    "no image is opened."
+from defect_ml.data.mvtec import CATEGORIES
+from defect_ml.data.splits import (  # the rules are defined once, in defect_ml
+    CALIB_FRACTION,
+    DEFAULT_SEED,
+    METHOD,
+    SPLIT_VERSION,
+    assign,
+    list_sha256,
+    validate_split,
 )
 
 
@@ -49,25 +47,6 @@ def list_visible(path: Path) -> list[str]:
     if not path.is_dir():
         return []
     return sorted(n for n in os.listdir(path) if not n.startswith("."))
-
-
-def n_calib_for(n: int) -> int:
-    return int(n * CALIB_FRACTION + 0.5)  # round half up
-
-
-def list_sha256(paths: list[str]) -> str:
-    return hashlib.sha256(("\n".join(sorted(paths)) + "\n").encode()).hexdigest()
-
-
-def assign(names: list[str], seed: int, category: str) -> tuple[list[str], list[str]]:
-    """Return (fit, calib) as sorted lists of file names."""
-
-    def rank(name: str) -> tuple[str, str]:
-        return hashlib.sha256(f"{seed}:{category}:{name}".encode()).hexdigest(), name
-
-    ranked = sorted(names, key=rank)
-    k = n_calib_for(len(names))
-    return sorted(ranked[k:]), sorted(ranked[:k])
 
 
 def cross_check_manifest(manifest_path: Path, category: str, names: list[str]) -> str | None:
@@ -119,46 +98,6 @@ def build_split(data_dir: Path, category: str, seed: int, manifest_path: Path) -
         "calib": calib_paths,
         "test_files_not_opened": test_files,
     }
-
-
-def validate_split(doc: dict) -> list[str]:
-    """Return a list of problems (empty means the split is consistent)."""
-    problems: list[str] = []
-    fit, calib = doc["fit"], doc["calib"]
-    test = [p for paths in doc["test_files_not_opened"].values() for p in paths]
-    for label, paths in (("fit", fit), ("calib", calib), ("test", test)):
-        if paths != sorted(paths):
-            problems.append(f"{label} is not sorted")
-        if len(set(paths)) != len(paths):
-            problems.append(f"{label} has duplicates")
-    if set(fit) & set(calib):
-        problems.append("fit and calib overlap")
-    if (set(fit) | set(calib)) & set(test):
-        problems.append("a test file appears in fit or calib")
-    bad = [p for p in fit + calib if not p.startswith("train/good/")]
-    if bad:
-        problems.append(f"{len(bad)} fit/calib path(s) are not under train/good/")
-    if any(not p.startswith("test/") for p in test):
-        problems.append("a test path is not under test/")
-    total = len(fit) + len(calib)
-    counts = doc["counts"]
-    if (counts["train_good_total"], counts["fit"], counts["calib"]) != (
-        total,
-        len(fit),
-        len(calib),
-    ):
-        problems.append("counts do not match the lists")
-    if len(calib) != n_calib_for(total):
-        problems.append(f"calib size {len(calib)} is not round(0.2 * {total})")
-    if doc["train_files_sha256"] != list_sha256(fit + calib):
-        problems.append("train_files_sha256 does not match the lists")
-    names = [Path(p).name for p in fit + calib]
-    expected_fit, expected_calib = assign(names, doc["seed"], doc["category"])
-    if [Path(p).name for p in calib] != expected_calib or [
-        Path(p).name for p in fit
-    ] != expected_fit:
-        problems.append("the lists are not what the stated method gives for this seed")
-    return problems
 
 
 def run(args: argparse.Namespace) -> int:

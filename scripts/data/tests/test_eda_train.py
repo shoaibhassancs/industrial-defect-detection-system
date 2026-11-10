@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 import numpy as np
+from defect_ml.data.mvtec import assert_training_path
 from PIL import Image
 
 SCRIPT_DIR = Path(__file__).resolve().parents[1]
@@ -109,7 +110,7 @@ def test_the_guard_blocks_paths_outside_train_good(tmp_path: Path) -> None:
     data = make_dataset(tmp_path)
     for forbidden in ("test/good/000.png", "ground_truth/crack/000_mask.png"):
         try:
-            verify_dataset.assert_allowed(data, data / "bottle" / forbidden)
+            assert_training_path(data, data / "bottle" / forbidden)
         except PermissionError:
             continue
         raise AssertionError(f"guard allowed {forbidden}")

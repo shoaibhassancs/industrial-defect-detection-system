@@ -14,7 +14,7 @@ import sys
 import threading
 from datetime import UTC, datetime
 
-DATA_VOLUME = "/System/Volumes/Data"
+DATA_VOLUME = "/System/Volumes/Data"  # the user-data volume on macOS; absent on Linux (CI)
 GUARD_EXIT_CODE = 3
 
 
@@ -35,11 +35,15 @@ def swap_used_mb() -> float | None:
 
 
 def free_disk_gib() -> float:
-    return shutil.disk_usage(DATA_VOLUME).free / 2**30
+    """Free space on the data volume (macOS), or on the volume holding the working folder."""
+    path = DATA_VOLUME if os.path.isdir(DATA_VOLUME) else os.getcwd()
+    return shutil.disk_usage(path).free / 2**30
 
 
 def rss_peak_mb() -> float:
-    return round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 2**20, 1)  # bytes on macOS
+    peak = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    unit = 2**20 if sys.platform == "darwin" else 2**10  # bytes on macOS, kibibytes on Linux
+    return round(peak / unit, 1)
 
 
 def system_state() -> dict[str, object]:

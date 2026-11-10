@@ -56,7 +56,7 @@ Counts per category (`train_good` / `test_good` / `test_defective`) are in `scri
 
 The training and calibration loader (`defect_ml.data.mvtec.TrainingImages`) reads only the files listed in `splits/<category>.json` for its group (`fit` or `calib`), checks each against the verified manifest, and prepares it with `defect_core.preprocessing`. It cannot reach `test/` or `ground_truth/`, and it has no flag, argument or environment variable that changes that. This is a rule about the **training path**, not a permanent ban on the data.
 
-After the model is frozen and calibrated (Phase 3), the held-out test images and masks are read by a **separate, explicit component**, `defect_ml/evaluate.py` (not written yet). By design that component:
+After the model is frozen and calibrated (Phase 3), the held-out test images and masks are read by a **separate, explicit component**, `defect_ml/evaluate.py` (written; run once per version, first run for `bottle` on 2026-11-10). By design that component:
 
 1. refuses to run unless the artifact's manifest is frozen and calibrated;
 2. reads test files through its own reader, with its own check of which paths it may open, and not through the training loader;

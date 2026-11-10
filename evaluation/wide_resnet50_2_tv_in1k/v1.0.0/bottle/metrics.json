@@ -1,0 +1,436 @@
+{
+ "step": "Phase 3 step 6: sealed test evaluation (first and only for this version)",
+ "status": "evaluated on the official test set; nothing tuned on it",
+ "headline": true,
+ "headline_rule": "docs/adr/ADR-0002-model-and-serving.md (F3 skipped for the headline)",
+ "run_id": "bottle_wide_resnet50_2_tv_in1k_v1.0.0_20261110T043140Z",
+ "category": "bottle",
+ "version": "1.0.0",
+ "artifact": "artifacts/bottle_wide_resnet50_2_tv_in1k_v1.0.0",
+ "weights_sha256": "465f83449447ad9df33eb28b09a3372fb2000a96055ebc71fea7b2dafa5b0b7c",
+ "calibrated_manifest_sha256": "70b8fa558cf34e0b257b07a9f83e7fe86d78c527dbb9171770318db5dd8185a1",
+ "model": {
+  "backbone": "wide_resnet50_2.tv_in1k",
+  "layers": [
+   "layer2",
+   "layer3"
+  ],
+  "num_neighbors": 9,
+  "coreset_ratio": 0.1
+ },
+ "calibration_used": {
+  "alpha": 0.05,
+  "n": 42,
+  "k": 41,
+  "threshold": 1.3681522607803345,
+  "false_alarm_bound": 0.046511627906976744,
+  "highlight": 1.2375992143154142
+ },
+ "bootstrap": {
+  "resamples": 1000,
+  "seed": 0,
+  "confidence": 0.95
+ },
+ "results": {
+  "image": {
+   "n_normal": 20,
+   "n_anomalous": 63,
+   "auroc": {
+    "estimate": 1.0,
+    "low": 1.0,
+    "high": 1.0,
+    "confidence": 0.95,
+    "n_resamples": 1000,
+    "seed": 0,
+    "method": "percentile bootstrap, images resampled within each class"
+   },
+   "aupr": {
+    "estimate": 0.9999999999999998,
+    "low": 0.9999999999999998,
+    "high": 1.0,
+    "confidence": 0.95,
+    "n_resamples": 1000,
+    "seed": 0,
+    "method": "percentile bootstrap, images resampled within each class"
+   },
+   "at_calibrated_threshold": {
+    "threshold": 1.3681522607803345,
+    "tp": 63,
+    "fp": 3,
+    "tn": 17,
+    "fn": 0,
+    "tpr": 1.0,
+    "fpr": 0.15,
+    "precision": 0.9545454545454546,
+    "f1": 0.9767441860465116
+   },
+   "false_alarm_on_normal_test_images": {
+    "fpr": 0.15,
+    "n_normal": 20,
+    "false_alarms": 3,
+    "alpha": 0.05,
+    "bound_for_new_normal_images": 0.046511627906976744
+   },
+   "per_defect_recall": {
+    "broken_large": {
+     "n": 20,
+     "detected": 20,
+     "recall": 1.0
+    },
+    "broken_small": {
+     "n": 22,
+     "detected": 22,
+     "recall": 1.0
+    },
+    "contamination": {
+     "n": 21,
+     "detected": 21,
+     "recall": 1.0
+    }
+   }
+  },
+  "pixel": {
+   "resolution": "pixel metrics at 256 x 256: ground-truth masks resized to the model's map size with nearest-neighbour; not computed at the original image size",
+   "n_images": 83,
+   "n_pixels": 5439488,
+   "n_anomalous_pixels": 314384,
+   "auroc": 0.9871506457944628,
+   "aupro_fpr_0.3": 0.9478398928699513,
+   "highlight_level": {
+    "highlight": 1.2375992143154142,
+    "tp": 314290,
+    "fp": 748073,
+    "fn": 94,
+    "precision": 0.29584049896316045,
+    "recall": 0.999701002595552
+   }
+  }
+ },
+ "mask_pixel_counts": {
+  "bottle/ground_truth/broken_large/000_mask.png": {
+   "pixels_original": 88192,
+   "pixels_resized": 7131
+  },
+  "bottle/ground_truth/broken_large/001_mask.png": {
+   "pixels_original": 76641,
+   "pixels_resized": 6192
+  },
+  "bottle/ground_truth/broken_large/002_mask.png": {
+   "pixels_original": 125835,
+   "pixels_resized": 10184
+  },
+  "bottle/ground_truth/broken_large/003_mask.png": {
+   "pixels_original": 222091,
+   "pixels_resized": 17955
+  },
+  "bottle/ground_truth/broken_large/004_mask.png": {
+   "pixels_original": 33132,
+   "pixels_resized": 2678
+  },
+  "bottle/ground_truth/broken_large/005_mask.png": {
+   "pixels_original": 33201,
+   "pixels_resized": 2685
+  },
+  "bottle/ground_truth/broken_large/006_mask.png": {
+   "pixels_original": 123810,
+   "pixels_resized": 10013
+  },
+  "bottle/ground_truth/broken_large/007_mask.png": {
+   "pixels_original": 130952,
+   "pixels_resized": 10595
+  },
+  "bottle/ground_truth/broken_large/008_mask.png": {
+   "pixels_original": 105614,
+   "pixels_resized": 8536
+  },
+  "bottle/ground_truth/broken_large/009_mask.png": {
+   "pixels_original": 70875,
+   "pixels_resized": 5743
+  },
+  "bottle/ground_truth/broken_large/010_mask.png": {
+   "pixels_original": 90028,
+   "pixels_resized": 7291
+  },
+  "bottle/ground_truth/broken_large/011_mask.png": {
+   "pixels_original": 60540,
+   "pixels_resized": 4898
+  },
+  "bottle/ground_truth/broken_large/012_mask.png": {
+   "pixels_original": 70457,
+   "pixels_resized": 5689
+  },
+  "bottle/ground_truth/broken_large/013_mask.png": {
+   "pixels_original": 109290,
+   "pixels_resized": 8838
+  },
+  "bottle/ground_truth/broken_large/014_mask.png": {
+   "pixels_original": 38206,
+   "pixels_resized": 3094
+  },
+  "bottle/ground_truth/broken_large/015_mask.png": {
+   "pixels_original": 75659,
+   "pixels_resized": 6117
+  },
+  "bottle/ground_truth/broken_large/016_mask.png": {
+   "pixels_original": 118913,
+   "pixels_resized": 9615
+  },
+  "bottle/ground_truth/broken_large/017_mask.png": {
+   "pixels_original": 114063,
+   "pixels_resized": 9222
+  },
+  "bottle/ground_truth/broken_large/018_mask.png": {
+   "pixels_original": 106080,
+   "pixels_resized": 8602
+  },
+  "bottle/ground_truth/broken_large/019_mask.png": {
+   "pixels_original": 102217,
+   "pixels_resized": 8275
+  },
+  "bottle/ground_truth/broken_small/000_mask.png": {
+   "pixels_original": 7166,
+   "pixels_resized": 580
+  },
+  "bottle/ground_truth/broken_small/001_mask.png": {
+   "pixels_original": 11966,
+   "pixels_resized": 973
+  },
+  "bottle/ground_truth/broken_small/002_mask.png": {
+   "pixels_original": 29456,
+   "pixels_resized": 2390
+  },
+  "bottle/ground_truth/broken_small/003_mask.png": {
+   "pixels_original": 65292,
+   "pixels_resized": 5284
+  },
+  "bottle/ground_truth/broken_small/004_mask.png": {
+   "pixels_original": 25926,
+   "pixels_resized": 2105
+  },
+  "bottle/ground_truth/broken_small/005_mask.png": {
+   "pixels_original": 12266,
+   "pixels_resized": 988
+  },
+  "bottle/ground_truth/broken_small/006_mask.png": {
+   "pixels_original": 21797,
+   "pixels_resized": 1767
+  },
+  "bottle/ground_truth/broken_small/007_mask.png": {
+   "pixels_original": 17046,
+   "pixels_resized": 1370
+  },
+  "bottle/ground_truth/broken_small/008_mask.png": {
+   "pixels_original": 17311,
+   "pixels_resized": 1400
+  },
+  "bottle/ground_truth/broken_small/009_mask.png": {
+   "pixels_original": 19096,
+   "pixels_resized": 1535
+  },
+  "bottle/ground_truth/broken_small/010_mask.png": {
+   "pixels_original": 37177,
+   "pixels_resized": 3003
+  },
+  "bottle/ground_truth/broken_small/011_mask.png": {
+   "pixels_original": 15597,
+   "pixels_resized": 1262
+  },
+  "bottle/ground_truth/broken_small/012_mask.png": {
+   "pixels_original": 63191,
+   "pixels_resized": 5117
+  },
+  "bottle/ground_truth/broken_small/013_mask.png": {
+   "pixels_original": 26219,
+   "pixels_resized": 2119
+  },
+  "bottle/ground_truth/broken_small/014_mask.png": {
+   "pixels_original": 14546,
+   "pixels_resized": 1179
+  },
+  "bottle/ground_truth/broken_small/015_mask.png": {
+   "pixels_original": 13480,
+   "pixels_resized": 1089
+  },
+  "bottle/ground_truth/broken_small/016_mask.png": {
+   "pixels_original": 16578,
+   "pixels_resized": 1338
+  },
+  "bottle/ground_truth/broken_small/017_mask.png": {
+   "pixels_original": 20384,
+   "pixels_resized": 1650
+  },
+  "bottle/ground_truth/broken_small/018_mask.png": {
+   "pixels_original": 46314,
+   "pixels_resized": 3745
+  },
+  "bottle/ground_truth/broken_small/019_mask.png": {
+   "pixels_original": 22626,
+   "pixels_resized": 1836
+  },
+  "bottle/ground_truth/broken_small/020_mask.png": {
+   "pixels_original": 28333,
+   "pixels_resized": 2289
+  },
+  "bottle/ground_truth/broken_small/021_mask.png": {
+   "pixels_original": 14995,
+   "pixels_resized": 1218
+  },
+  "bottle/ground_truth/contamination/000_mask.png": {
+   "pixels_original": 58708,
+   "pixels_resized": 4740
+  },
+  "bottle/ground_truth/contamination/001_mask.png": {
+   "pixels_original": 58120,
+   "pixels_resized": 4700
+  },
+  "bottle/ground_truth/contamination/002_mask.png": {
+   "pixels_original": 14913,
+   "pixels_resized": 1201
+  },
+  "bottle/ground_truth/contamination/003_mask.png": {
+   "pixels_original": 21317,
+   "pixels_resized": 1727
+  },
+  "bottle/ground_truth/contamination/004_mask.png": {
+   "pixels_original": 16790,
+   "pixels_resized": 1360
+  },
+  "bottle/ground_truth/contamination/005_mask.png": {
+   "pixels_original": 99554,
+   "pixels_resized": 8062
+  },
+  "bottle/ground_truth/contamination/006_mask.png": {
+   "pixels_original": 123943,
+   "pixels_resized": 10016
+  },
+  "bottle/ground_truth/contamination/007_mask.png": {
+   "pixels_original": 45048,
+   "pixels_resized": 3649
+  },
+  "bottle/ground_truth/contamination/008_mask.png": {
+   "pixels_original": 133876,
+   "pixels_resized": 10818
+  },
+  "bottle/ground_truth/contamination/009_mask.png": {
+   "pixels_original": 111640,
+   "pixels_resized": 9048
+  },
+  "bottle/ground_truth/contamination/010_mask.png": {
+   "pixels_original": 93231,
+   "pixels_resized": 7539
+  },
+  "bottle/ground_truth/contamination/011_mask.png": {
+   "pixels_original": 120781,
+   "pixels_resized": 9760
+  },
+  "bottle/ground_truth/contamination/012_mask.png": {
+   "pixels_original": 122608,
+   "pixels_resized": 9910
+  },
+  "bottle/ground_truth/contamination/013_mask.png": {
+   "pixels_original": 41319,
+   "pixels_resized": 3342
+  },
+  "bottle/ground_truth/contamination/014_mask.png": {
+   "pixels_original": 5429,
+   "pixels_resized": 454
+  },
+  "bottle/ground_truth/contamination/015_mask.png": {
+   "pixels_original": 33779,
+   "pixels_resized": 2727
+  },
+  "bottle/ground_truth/contamination/016_mask.png": {
+   "pixels_original": 122515,
+   "pixels_resized": 9892
+  },
+  "bottle/ground_truth/contamination/017_mask.png": {
+   "pixels_original": 67541,
+   "pixels_resized": 5470
+  },
+  "bottle/ground_truth/contamination/018_mask.png": {
+   "pixels_original": 4663,
+   "pixels_resized": 375
+  },
+  "bottle/ground_truth/contamination/019_mask.png": {
+   "pixels_original": 27013,
+   "pixels_resized": 2183
+  },
+  "bottle/ground_truth/contamination/020_mask.png": {
+   "pixels_original": 121385,
+   "pixels_resized": 9821
+  }
+ },
+ "data_access": {
+  "images_read": 83,
+  "masks_read": 63,
+  "files_opened_inside_dataset_folder": 146,
+  "exactly_the_listed_files_each_once": true,
+  "only_test_and_ground_truth_opened": true,
+  "directory_listings_inside_dataset_folder": 0,
+  "access_log": "evaluation/test_access_log.jsonl",
+  "method": "sys.addaudithook: open, os.listdir, os.scandir during scoring"
+ },
+ "settings_file": "ml/configs/bottle_wrn50.yaml",
+ "settings_file_sha256": "cab75ef8964f52dc3ab15749b906e52761ed003cb4e024e3aa74b206cdb4db45",
+ "git": {
+  "commit": "1349c84364473301a757266ca245c894edbe9b4b",
+  "uncommitted_changes": true
+ },
+ "versions": {
+  "python": "3.12.16",
+  "torch": "2.15.0",
+  "platform": "macOS-15.2-arm64-arm-64bit"
+ },
+ "peak_rss_mb": 1173.8,
+ "system_before": {
+  "time_utc": "2026-11-10T04:31:40+00:00",
+  "swap_used_mb": 2542.25,
+  "free_disk_gib": 8.23,
+  "load_average": [
+   2.44,
+   2.28,
+   2.08
+  ],
+  "memory_free_percentage": "System-wide memory free percentage: 37%",
+  "power": [
+   "Now drawing from 'AC Power'",
+   " -InternalBattery-0 (id=21102691)\t100%; charged; 0:00 remaining present: true"
+  ],
+  "thermal": [
+   "Note: No thermal warning level has been recorded",
+   "Note: No performance warning level has been recorded",
+   "Note: No CPU power status has been recorded"
+  ]
+ },
+ "system_after": {
+  "time_utc": "2026-11-10T04:32:04+00:00",
+  "swap_used_mb": 2542.25,
+  "free_disk_gib": 8.23,
+  "load_average": [
+   2.48,
+   2.3,
+   2.09
+  ],
+  "memory_free_percentage": "System-wide memory free percentage: 37%",
+  "power": [
+   "Now drawing from 'AC Power'",
+   " -InternalBattery-0 (id=21102691)\t100%; charged; 0:00 remaining present: true"
+  ],
+  "thermal": [
+   "Note: No thermal warning level has been recorded",
+   "Note: No performance warning level has been recorded",
+   "Note: No CPU power status has been recorded"
+  ]
+ },
+ "watchdog": {
+  "max_swap_used_mb_seen": 2542.2,
+  "min_free_disk_gib_seen": 8.22
+ },
+ "limitations": [
+  "One category (bottle), one split seed, one calibration set of 42 images.",
+  "pixel metrics at 256 x 256: ground-truth masks resized to the model's map size with nearest-neighbour; not computed at the original image size.",
+  "The false-alarm rate on the 20 normal test images is a small-sample estimate next to the guarantee for new normal images drawn like the calibration images.",
+  "Scores are anomaly scores, not probabilities. Verdicts are demo decisions.",
+  "Test-file hashes are as read; the data manifest holds none for test files."
+ ]
+}

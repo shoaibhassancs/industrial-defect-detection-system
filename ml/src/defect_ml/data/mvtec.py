@@ -15,7 +15,7 @@ module: the guard refuses them, and the loader has no switch, argument or enviro
 changes that. This is a statement about the *training* path, not a permanent ban on the data.
 
 After the model is frozen and calibrated (PLAN.md Phase 3), the sealed evaluation reads those files
-through a **separate, explicit path**: ``defect_ml/evaluate.py`` (not written yet). By design that
+through a **separate, explicit path**: ``defect_ml/evaluate.py``. By design that
 code:
 
 * refuses to run unless the artifact's manifest is frozen and calibrated;

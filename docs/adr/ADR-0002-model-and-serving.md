@@ -78,9 +78,19 @@ percentile 99.5, heatmap upper limit = 1.5 x the highlight level. The multiple *
 display choice**; it only changes how the heatmap looks, never the verdict, and it is not tuned on
 test images. A change to any of these produces a new version, and every evaluated version is listed.
 
+## Addendum 2026-11-10 (before any test access): F3 skipped for the headline
+
+The owner chose to skip F3 for the headline decision. Under the timing rule in Decision 1, the headline
+is therefore fixed as `wide_resnet50_2.tv_in1k` and cannot change after test access. F3 may still be
+done later to inform hosting (Checkpoint B), but its result can not change the headline.
+The sealed evaluation is planned as one batch with identical code and settings: first
+`wide_resnet50_2.tv_in1k`, then `resnet18.tv_in1k`, version 1.0.0, pixel metrics at 256 x 256 with
+nearest-neighbour masks, bootstrap seed 0 with 1000 resamples. Nothing is changed between the two
+runs. Both results are reported.
+
 ## What stays open
 - F3: container measurement with CPU quotas and a memory limit (needs a CPU-only torch index decision).
-  It can still change the headline, but only if it is completed before the first test access.
+  It no longer affects the headline (see the addendum); it still informs hosting at Checkpoint B.
 - Checkpoint B: hosting plan.
 - Whether the Mac can fit the other 14 categories. Only `bottle` was fitted.
 - ImageNet training-data terms (A7) and the Kaggle page / archive comparison (A17) remain unconfirmed.

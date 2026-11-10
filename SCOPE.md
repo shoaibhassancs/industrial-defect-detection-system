@@ -44,4 +44,5 @@ Custom PatchCore, PaDiM baseline, out-of-distribution warning, other models, all
 ## Constraints
 - Development machine: MacBook Air M1, 8 GB RAM. CPU by default; experiments run one at a time.
 - Dataset: MVTec AD (CC BY-NC-SA 4.0). Basic attribution and a non-commercial notice are kept in the docs.
-- Code license: MIT for original code, added when the repository goes public. The repository stays private until then.
+- Repository: intentionally public (owner's statement, 2026-11-10). The project is noncommercial.
+- Code license: MIT for original code is planned; the `LICENSE` file has not been added yet.

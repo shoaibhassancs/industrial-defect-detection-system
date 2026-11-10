@@ -1,0 +1,25 @@
+{
+  "source": "Official MVTec AD paper, https://www.mvtec.com/fileadmin/Redaktion/mvtec.com/company/research/datasets/mvtec_ad.pdf. Table supplied by the project owner on 2026-11-10, who states it comes from that paper. Claude could not open the PDF from its environment (the server closed the connection on 2026-11-10), so it has not checked the table against the PDF itself.",
+  "source_is_official_mvtec": true,
+  "verified_by_claude_against_source": false,
+  "download_source_of_local_folder": "Kaggle (owner's statement, 2026-11-10; the specific Kaggle page was not stated). This is separate from where these counts come from (the official paper above).",
+  "note": "train_good = training images, test_good = normal test images, test_defective = DEFECTIVE TEST IMAGES. None of these is a mask-file count or a defect-region count, and no mask field is compared.",
+  "categories": {
+    "carpet": {"train_good": 280, "test_good": 28, "test_defective": 89},
+    "grid": {"train_good": 264, "test_good": 21, "test_defective": 57},
+    "leather": {"train_good": 245, "test_good": 32, "test_defective": 92},
+    "tile": {"train_good": 230, "test_good": 33, "test_defective": 84},
+    "wood": {"train_good": 247, "test_good": 19, "test_defective": 60},
+    "bottle": {"train_good": 209, "test_good": 20, "test_defective": 63},
+    "cable": {"train_good": 224, "test_good": 58, "test_defective": 92},
+    "capsule": {"train_good": 219, "test_good": 23, "test_defective": 109},
+    "hazelnut": {"train_good": 391, "test_good": 40, "test_defective": 70},
+    "metal_nut": {"train_good": 220, "test_good": 22, "test_defective": 93},
+    "pill": {"train_good": 267, "test_good": 26, "test_defective": 141},
+    "screw": {"train_good": 320, "test_good": 41, "test_defective": 119},
+    "toothbrush": {"train_good": 60, "test_good": 12, "test_defective": 30},
+    "transistor": {"train_good": 213, "test_good": 60, "test_defective": 40},
+    "zipper": {"train_good": 240, "test_good": 32, "test_defective": 119}
+  },
+  "totals": {"train_good": 3629, "test_good": 467, "test_defective": 1258}
+}

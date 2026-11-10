@@ -11,7 +11,10 @@ The model is **PatchCore** (PyTorch, via the anomalib library), fitted only on d
 ## What exists so far
 
 - A Python workspace (`core/`) with PatchCore compatibility tests.
-- Ruff (lint and format) and pytest.
+- Ruff (lint and format) and pytest, run automatically on GitHub Actions (`.github/workflows/ci.yml`).
+- Experiments on saving and reloading a PatchCore model (`scripts/feasibility/`), using synthetic data only.
+- A script that checks a local copy of the MVTec AD dataset (`scripts/data/verify_dataset.py`). The dataset itself is not part of this repository.
+- A fixed 80/20 split of the `bottle` training images into a "fit" group and a "calibration" group (`scripts/data/make_splits.py`, `splits/bottle.json`). It lists file names only.
 
 Nothing else yet. The roadmap is private for now.
 
@@ -25,7 +28,7 @@ make lint     # style and mistake checks
 make test     # run the tests (about 10 seconds)
 ```
 
-Installation on Linux has not been tested yet.
+On Linux, a GitHub Actions run (Ubuntu, x86_64, 2026-11-09, commit `90624b0`) installed the locked dependencies and passed lint and tests. For Linux, `uv.lock` lists the large GPU-enabled PyTorch build; a CPU-only setup has not been configured yet.
 
 ## Project documents
 
@@ -35,8 +38,8 @@ Installation on Linux has not been tested yet.
 
 ## Dataset and attribution
 
-The model will be fitted on the **MVTec Anomaly Detection (MVTec AD)** dataset, released by MVTec under the **CC BY-NC-SA 4.0** license, which prohibits commercial use. This project is a non-commercial educational demo. Full attribution, citations, and notes on processed images will be added in `docs/data.md` when the dataset is added (Phase 1). Official page: <https://www.mvtec.com/research-teaching/datasets/mvtec-ad>.
+The model will be fitted on the **MVTec Anomaly Detection (MVTec AD)** dataset, released by MVTec under the **CC BY-NC-SA 4.0** license, which prohibits commercial use. This project is a non-commercial educational demo. The local copy used for development is not included in this repository; the project owner says it was downloaded from Kaggle, and it has not been compared file by file with the official MVTec archive (only the per-category image counts match the official paper). Full attribution, citations, and notes on processed images will be added in `docs/data.md` (Phase 1). Official page: <https://www.mvtec.com/research-teaching/datasets/mvtec-ad>.
 
 ## License
 
-The license for original project code (MIT) will be added when the repository is made public.
+This repository is public and the project is noncommercial. The plan is to license the original project code under MIT, but no `LICENSE` file has been added yet. The dataset is not part of this repository and keeps its own license (see above).

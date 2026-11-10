@@ -7,8 +7,9 @@
 project-notes/
 
 # ---- Dataset, models, and generated artifacts -----------------------------
-# MVTec AD dataset (never committed)
-data/
+# MVTec AD dataset (never committed). The leading slash limits this to the top-level data/ folder,
+# so source folders that happen to be named "data" (scripts/data/) are still tracked.
+/data/
 # Frozen model artifacts before upload
 artifacts/
 # Local dev image storage (Release 2)

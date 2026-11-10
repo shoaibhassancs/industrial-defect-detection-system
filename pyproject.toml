@@ -21,5 +21,5 @@ extend-exclude = [".venv"]
 select = ["E", "W", "F", "I", "UP", "B"]
 
 [tool.pytest.ini_options]
-testpaths = ["core/tests"]
+testpaths = ["core/tests", "scripts/data/tests"]
 addopts = "-ra"

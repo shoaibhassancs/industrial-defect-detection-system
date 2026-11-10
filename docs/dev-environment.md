@@ -10,7 +10,7 @@ Where the numbers in this project come from. Speed and memory results mean littl
 | CPU cores | 8 (4 performance, 4 efficiency) |
 | Memory | 8 GB (8,589,934,592 bytes), shared by the OS, apps, and any model we run |
 | OS | macOS 15.2 (build 24C101), arm64 |
-| Disk (data volume) | 228 GiB total, **11 GiB free (95% used)** on 2026-11-09. At the start of the day it showed 19 GiB free. |
+| Disk (data volume) | 228 GiB total. Free space varied a lot: 19 GiB at the start of 2026-11-09, 11 GiB later that day, as low as 5.0 GiB on 2026-11-10 while the Mac was swapping heavily, 17 GiB after closing apps and restarting, about 16 GiB afterwards. Check it before downloads and measurements. |
 
 Consequences for the project:
 - The Mac has no fan, so long runs may slow down from heat. Record wall time, and plug the Mac in.
@@ -43,9 +43,12 @@ Consequences for the project:
 
 The lockfile lists 102 packages (our own `defect-core`, 4 development tools, and the rest third-party). 81 are installed on this Mac; the others are only needed on other platforms. The macOS download was about 280 MB by a sum of lockfile wheel sizes (an estimate, not a measured download).
 
-**Not yet tested:** installation on Linux (linux/amd64), which Render and CI use. The lock resolves for it, but nothing has been installed there. Torch on Linux likely needs the CPU-only package index to avoid very large GPU wheels **[Unverified]**.
+**Linux (verified once, 2026-11-09):** a GitHub Actions run on `ubuntu-latest` (x86_64) installed the locked dependencies (61 s for the install step) and passed lint and tests (commit `90624b0`; the job took 138 s in total). This comes from GitHub's step results; the raw logs were not readable without a login, so the download size, free disk space and test count on the runner are **[Unverified]**. The lock still resolves Linux torch from PyPI with the large NVIDIA/CUDA packages (about 3.25 GB of wheels by our estimate from the lock). A CPU-only torch index for Linux has not been configured; the Docker image in Phase 5 will need one. Other Linux setups (for example the Render runtime) have not been tested.
 
 ## Findings that affect how we work
+
+- **Swap can fill the disk and slow everything (observed 2026-11-10):** with many apps open, macOS had 7.9 GB of 9.2 GB swap in use, free disk fell to about 5 GiB, and `make test` took 74 s instead of about 8 s. After closing apps and restarting, swap fell to about 0.4 GB and tests took 7.7 s again. The cause of the slowdown is consistent with swapping but was not proven. Before timed runs, check `sysctl vm.swapusage` and `df -h`.
+- **Dataset:** the local copy is at `data/raw/mvtec-ad/` (about 4.9 GB, gitignored). The owner says it was downloaded from Kaggle. See `decisions.md` entry 042.
 
 - **Apple GPU backend (MPS):** reported available by torch, but not used. Fitting, calibration, and evaluation run on CPU so the reported numbers match the deployment target.
 - **Seeding:** to get repeatable results, seed **both** `torch` and `numpy`. With only torch seeded, two identical runs gave different scores (max difference 0.0108 in a small test); with numpy also seeded they were identical. The anomalib coreset sampler uses a random projection with no fixed seed. The exact mechanism is **[Unverified]**; the effect was tested.

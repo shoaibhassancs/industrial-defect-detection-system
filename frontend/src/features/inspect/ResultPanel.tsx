@@ -27,6 +27,26 @@ function Figure({ title, src, caption }: { title: string; src: string; caption: 
   );
 }
 
+function Item({
+  term,
+  value,
+  explanation,
+  wide = false,
+}: {
+  term: string;
+  value: React.ReactNode;
+  explanation: string;
+  wide?: boolean;
+}) {
+  return (
+    <div className={wide ? "sm:col-span-2" : undefined}>
+      <dt className="text-sm font-medium text-slate-800">{term}</dt>
+      <dd className="text-lg">{value}</dd>
+      <dd className="text-sm text-slate-700">{explanation}</dd>
+    </div>
+  );
+}
+
 /** Shows one inspection result. The verdict is the server's; nothing is recomputed here. */
 export const ResultPanel = forwardRef<HTMLHeadingElement, { result: InspectionResponse }>(
   function ResultPanel({ result }, headingRef) {
@@ -54,43 +74,48 @@ export const ResultPanel = forwardRef<HTMLHeadingElement, { result: InspectionRe
             Demo decision: {verdictLabel(result.prediction)}
           </p>
           <p className="mt-1 text-sm">
-            A demo decision from one model on one category. It is not a quality certification.
+            The demo says “Anomalous” only when the anomaly score is above the threshold. This is a
+            demo decision from one model on one category, not a quality certification.
           </p>
         </div>
 
-        <dl className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
-          <div>
-            <dt className="text-sm text-slate-600">Anomaly score</dt>
-            <dd className="font-mono text-lg">{formatScore(result.anomaly_score)}</dd>
-          </div>
-          <div>
-            <dt className="text-sm text-slate-600">Decision threshold</dt>
-            <dd className="font-mono text-lg">{formatScore(result.threshold)}</dd>
-          </div>
-          <div className="sm:col-span-2">
-            <dt className="text-sm text-slate-600">Rank among calibration images</dt>
-            <dd>
-              Score higher than <strong>{higher}</strong> of <strong>{of}</strong> calibration
-              normal images.
-            </dd>
-          </div>
-          <div>
-            <dt className="text-sm text-slate-600">Highlighted area</dt>
-            <dd>{area}% of the image</dd>
-          </div>
-          <div>
-            <dt className="text-sm text-slate-600">Largest highlighted region</dt>
-            <dd>
-              {result.region_bbox
+        <dl className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+          <Item
+            term="Anomaly score (higher means more unusual)"
+            value={<span className="font-mono">{formatScore(result.anomaly_score)}</span>}
+            explanation="How different the most unusual part of this image is from the normal images the model learned from. It is not a probability or a confidence, and it only means something next to the threshold."
+          />
+          <Item
+            term="Threshold (the cutoff)"
+            value={<span className="font-mono">{formatScore(result.threshold)}</span>}
+            explanation={`The demo says “Anomalous” only when the score is above this cutoff. It was set using ${of} normal calibration images.`}
+          />
+          <Item
+            wide
+            term={`Comparison with ${of} normal calibration images`}
+            value={
+              <>
+                Score higher than <strong>{higher}</strong> of <strong>{of}</strong> calibration
+                normal images.
+              </>
+            }
+            explanation={`This counts how many of the ${of} normal calibration images scored lower than this image. It is a comparison with those images, not a measure of confidence.`}
+          />
+          <Item
+            term="Highlighted area"
+            value={<>{area}% of the image</>}
+            explanation="A display aid: the share of the image drawn above a highlight level taken from the calibration images. It is not a measured defect size and does not change the decision."
+          />
+          <Item
+            term="Largest highlighted region"
+            value={
+              result.region_bbox
                 ? `x ${result.region_bbox[0]}, y ${result.region_bbox[1]}, ${result.region_bbox[2]} × ${result.region_bbox[3]} px`
-                : "none"}
-            </dd>
-          </div>
+                : "none"
+            }
+            explanation="A box around the biggest highlighted patch, in pixels of your original image."
+          />
         </dl>
-        <p className="text-sm text-slate-700">
-          The anomaly score is not a probability and not a confidence. It is only meaningful next to
-          the threshold and the calibration images.
-        </p>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <Figure
@@ -101,14 +126,45 @@ export const ResultPanel = forwardRef<HTMLHeadingElement, { result: InspectionRe
           <Figure
             title="Heatmap"
             src={result.images.heatmap.url}
-            caption="where the model found patches unlike normal ones"
+            caption="where the score is lower (darker colours) or higher (brighter orange and yellow)"
           />
           <Figure
             title="Overlay"
             src={result.images.overlay.url}
-            caption="heatmap and outline drawn over your image"
+            caption="the heatmap over your image, with an outline around the highlighted area"
           />
         </div>
+
+        <details className="rounded border border-slate-300 p-3 text-sm">
+          <summary className="cursor-pointer font-medium">How to read these results</summary>
+          <div className="mt-2 space-y-2">
+            <p>
+              The model keeps a memory of small patches taken from normal images. For your image it
+              finds the patch that matches that memory least well; the anomaly score measures how
+              poorly. A higher score means more unusual, compared with the normal images. The score
+              is not a probability, a confidence or a percentage of defect.
+            </p>
+            <p>
+              The threshold is a cutoff chosen from the scores of {of} normal calibration images
+              that were kept aside during training. The demo says “Anomalous” only when the score is
+              above it. The server makes that decision; this page only shows it.
+            </p>
+            <p>
+              The comparison counts how many calibration images scored lower than yours. It helps
+              you see where the score sits among normal images; it says nothing about how likely a
+              defect is.
+            </p>
+            <p>
+              The heatmap colours show lower and higher scores for each part of the image. The
+              highlighted area is a display aid. It is not a measured defect size, and it does not
+              change the decision.
+            </p>
+            <p>
+              How well the model works is measured on a separate, formal test set, not by trying one
+              image on this page.
+            </p>
+          </div>
+        </details>
 
         <details className="rounded border border-slate-300 p-3 text-sm">
           <summary className="cursor-pointer font-medium">How this decision was made</summary>
@@ -132,8 +188,8 @@ export const ResultPanel = forwardRef<HTMLHeadingElement, { result: InspectionRe
         <div className="rounded border border-slate-300 bg-slate-50 p-3 text-sm">
           <p>{result.limitation}</p>
           <p className="mt-1">
-            The model can not reliably tell that an image is out of scope, so an image of something
-            else may still get a confident-looking score. {result.disclaimer}
+            The model cannot reliably tell that an image is out of scope, so results on other
+            objects or image types may be unreliable. {result.disclaimer}
           </p>
         </div>
       </section>

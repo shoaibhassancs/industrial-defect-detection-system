@@ -66,8 +66,67 @@ describe("the Inspect flow", () => {
     await clickInspect(user);
     const panel = (await screen.findByRole("heading", { name: "Result" })).closest("section")!;
     expect(panel.textContent).not.toMatch(/\b(pass|passed|fail|failed|defective)\b/i);
-    expect(within(panel).getByText(/not a probability and not a confidence/i)).toBeInTheDocument();
+    expect(within(panel).getByText(/not a probability or a confidence/i)).toBeInTheDocument();
     expect(within(panel).getAllByText(/not a quality certification/i).length).toBeGreaterThan(0);
+  });
+
+  it("explains each number in plain words next to it", async () => {
+    server.use(
+      http.post(`${BASE}/inspections`, () =>
+        HttpResponse.json(
+          inspection({ calibration_rank: { score_higher_than: 3, of_calibration_normals: 17 } }),
+        ),
+      ),
+    );
+    const { user } = await chooseAndInspect(pngFile());
+    await clickInspect(user);
+    const panel = (await screen.findByRole("heading", { name: "Result" })).closest("section")!;
+    const text = panel.textContent ?? "";
+    // score: higher means more unusual, and not a probability
+    expect(text).toMatch(/higher means more unusual/i);
+    expect(text).toMatch(/not a probability or a confidence/i);
+    // threshold: a cutoff; "Anomalous" only when the score is above it
+    expect(text).toMatch(/Threshold \(the cutoff\)/);
+    expect(text).toMatch(/says “Anomalous” only when the score is above this cutoff/);
+    // rank: a comparison with the calibration images, not confidence (and the count comes from
+    // the server's answer, not from the page)
+    expect(text).toMatch(/set using 17 normal calibration images/);
+    expect(text).toMatch(/how many of the 17 normal calibration images scored lower/);
+    expect(text).toMatch(/not a measure of confidence/);
+    // highlighted area: a display aid, not a defect size
+    expect(text).toMatch(/A display aid/);
+    expect(text).toMatch(/not a measured defect size/);
+    expect(text).not.toMatch(/\b42\b/); // nothing is hard-coded to this model's 42 images
+  });
+
+  it("describes the heatmap colours as lower and higher scores, not as 'ordinary'", async () => {
+    const { user } = await chooseAndInspect(pngFile());
+    await clickInspect(user);
+    const panel = (await screen.findByRole("heading", { name: "Result" })).closest("section")!;
+    expect(panel.textContent).toMatch(
+      /lower \(darker colours\) or higher \(brighter orange and yellow\)/,
+    );
+    expect(panel.textContent).not.toMatch(/ordinary|meaningless/i);
+  });
+
+  it("opens a 'How to read these results' section that keeps performance claims out", async () => {
+    const user = userEvent.setup();
+    const { user: inspecting } = await chooseAndInspect(pngFile());
+    await clickInspect(inspecting);
+    const summary = await screen.findByText("How to read these results");
+    await user.click(summary);
+    const details = summary.closest("details")!;
+    expect(details).toHaveAttribute("open");
+    expect(details.textContent).toMatch(/measured on a separate, formal test set/i);
+    expect(details.textContent).toMatch(/server makes that decision; this page only shows it/i);
+  });
+
+  it("warns, before any upload, that the model is designed for MVTec AD bottle-like images", async () => {
+    render(<InspectPage />);
+    const warning = await screen.findByText(/designed for images like the MVTec AD bottle images/i);
+    expect(warning).toHaveTextContent(/unreliable on other objects or image types/i);
+    expect(warning).toHaveTextContent(/cannot reliably tell that an image is out of scope/i);
+    expect(document.body.textContent).not.toMatch(/meaningless/i);
   });
 
   it("refuses a non-image in the browser and sends nothing", async () => {

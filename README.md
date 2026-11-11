@@ -109,8 +109,17 @@ cd frontend && npm run dev     # http://localhost:5173
 ```
 
 Choose a category, choose a JPEG or PNG image and press "Inspect image". The result shows the demo
-decision, the anomaly score next to the threshold, the rank among the 42 calibration images, and the
-original, heatmap and overlay images. The API address is `VITE_API_BASE_URL` (default
+decision, the anomaly score next to the threshold, the comparison with the 42 normal calibration images,
+the highlighted area, and the original, heatmap and overlay images. Each number has a plain-language
+explanation beside it (higher score means more unusual and is not a probability; the threshold is a
+cutoff above which the demo says "Anomalous"; the comparison is not confidence; the highlighted area is a
+display aid, not a defect size) and a "How to read these results" section.
+
+**Page check with one real normal image (not a performance test):** after starting both programs, choose
+`data/raw/mvtec-ad/bottle/train/good/002.png`, a file listed under `calib` in `splits/bottle.json`. It is a
+training-split image, and its score is one of those used to set the threshold, so it checks that the
+page works and the numbers look plausible. It says nothing about model performance: that evidence is the
+formal test-set evaluation in [docs/evaluation.md](docs/evaluation.md). The API address is `VITE_API_BASE_URL` (default
 `http://localhost:8000`; see [frontend/.env.example](frontend/.env.example)). Checks: `make frontend-check`
 (format, lint, type-check, tests, build). The TypeScript types are generated from the API's OpenAPI
 description: after changing an endpoint run `make api-contract`; a backend test fails if the committed

@@ -115,6 +115,11 @@ export function InspectPage({ slowAfterMs = 4000, startupRetryMs = 5000 }: Inspe
           items and shows where it looks unusual. Images are checked and discarded; nothing is
           stored.
         </p>
+        <p className="rounded border border-slate-300 bg-slate-50 p-3 text-sm text-slate-800">
+          This demo is designed for images like the MVTec AD bottle images. It may be unreliable on
+          other objects or image types, and it cannot reliably tell that an image is out of scope.
+          It gives a demo decision, not a quality certification.
+        </p>
 
         {categories.status === "loading" && (
           <p role="status">
@@ -161,8 +166,7 @@ export function InspectPage({ slowAfterMs = 4000, startupRetryMs = 5000 }: Inspe
                 className="mt-1 block w-full text-sm file:mr-3 file:rounded file:border file:border-slate-500 file:bg-white file:px-3 file:py-1.5"
               />
               <p id={hintId} className="mt-1 text-xs text-slate-600">
-                Only images like the chosen MVTec AD category give meaningful results. Do not upload
-                anything private.
+                Meant for images like the chosen MVTec AD category. Do not upload anything private.
               </p>
               {fileProblem && (
                 <p role="alert" className="mt-2 text-sm font-medium text-red-800">

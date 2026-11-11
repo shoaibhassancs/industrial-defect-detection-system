@@ -1,0 +1,14 @@
+{
+  "source": "evaluation/wide_resnet50_2_tv_in1k/v1.0.0/bottle/metrics.json",
+  "source_sha256": "db291e93c4442e47205c0a37c433491a9922de55c162c314cef0b8bc1716db9e",
+  "category": "bottle",
+  "version": "1.0.0",
+  "backbone": "wide_resnet50_2.tv_in1k",
+  "n_anomalous": 63,
+  "n_normal": 20,
+  "defects_flagged": 63,
+  "defects_missed": 0,
+  "false_alarms": 3,
+  "false_alarm_rate": 0.15,
+  "target_rate": 0.05
+}

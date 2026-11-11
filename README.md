@@ -12,6 +12,7 @@ The model is **PatchCore** (PyTorch, via the anomalib library), fitted only on d
 
 - A Python workspace (`core/`) with PatchCore compatibility tests.
 - Ruff (lint and format) and pytest, run automatically on GitHub Actions (`.github/workflows/ci.yml`).
+- A second CI job for the frontend (format check, lint, type-check, tests, build) in the same workflow.
 - Experiments on saving and reloading a PatchCore model (`scripts/feasibility/`), using synthetic data only.
 - A script that checks a local copy of the MVTec AD dataset (`scripts/data/verify_dataset.py`). The dataset itself is not part of this repository.
 - A fixed 80/20 split of the `bottle` training images into a "fit" group and a "calibration" group (`scripts/data/make_splits.py`, `splits/bottle.json`). It lists file names only.
@@ -123,9 +124,9 @@ formal test-set evaluation in [docs/evaluation.md](docs/evaluation.md). The API 
 `http://localhost:8000`; see [frontend/.env.example](frontend/.env.example)). Checks: `make frontend-check`
 (format, lint, type-check, tests, build). The TypeScript types are generated from the API's OpenAPI
 description: after changing an endpoint run `make api-contract`; a backend test fails if the committed
-`frontend/openapi.json` is out of date. What exists so far: the Inspect page only (Phase 6 steps 0 to 6;
-the Model and About pages, routing, a drop zone, responsive and keyboard passes, and the sample gallery
-are not built, and no dataset image is included in the web app). Not deployed.
+`frontend/openapi.json` is out of date. What exists so far (Phase 6): four pages with a navigation bar (Home, Demo, Results, About). They are written for a quick reader: the key evidence and the key caveats are always visible, and the supporting detail is in expandable sections (nothing was deleted). **Home** (`/`) is a one-screen summary with a "Try the demo" button, the headline evidence (**63 of 63** defective test images flagged, **3 of 20 (15%)** normal images falsely flagged, the small-test-set caveat, and that two models were evaluated) and links to the source code, `docs/evaluation.md` and the model card. It makes no API calls: its numbers come from `frontend/src/generated/evidence.json`, a snapshot of the saved `metrics.json` made by `make evidence` (and a test fails if the snapshot is stale). **Demo** (`/inspect`) is the page described above: the result card shows the demo decision, the score next to the threshold and the image in tabs (Overlay selected first, then Heatmap and Original); the explanations are under "Show details" and "How to read these results". **Results** (`/model`) leads with the same two headline cards, a four-value at-a-glance table and the limits in short, then expandable sections for the counts, scores with intervals, per-defect-type counts, pixel-level results, the threshold, model details and all limitations (see below). **About** (`/about`) keeps the dataset attribution and the CC BY-NC-SA 4.0 licence visible and puts citations, the code-licence status, privacy, the unconfirmed items and the disclaimers in expandable sections, taken from [DATA_LICENSE.md](DATA_LICENSE.md), [docs/data.md](docs/data.md) and [docs/model-card.md](docs/model-card.md). The footer has a source-code link (`VITE_SOURCE_URL`).
+
+The **Results page** reads `GET /api/v1/model` and `/api/v1/metrics/bottle`, which serve the results stored in the model package, and only displays them: nothing is recalculated. It states that both models were evaluated and links to [docs/evaluation.md](docs/evaluation.md) (set `VITE_DOCS_BASE_URL` to point the link elsewhere) for the comparison with `resnet18`. No charts or dataset figures yet. Three checks keep the numbers honest: a frontend test feeds the real `evaluation/wide_resnet50_2_tv_in1k/v1.0.0/bottle/metrics.json` through the page and compares every number shown, and also fails on any number that did not come from the data; `scripts/tests/test_evaluation_matches_package.py` checks the saved metrics are consistent and (when the package is on the machine) equal the package's copy and hashes; the service itself refuses evaluation files whose hash does not match the package. The **Demo page** has a drop zone: a dashed box around the real file input, which stays visible and reachable with Tab. Dropped and picked files go through the same checks (`checkFile`), and only the first of several dropped files is used. The box itself is not a control; the keyboard route is the file input. The sample gallery is not built, and no dataset image is included in the web app. The code-based keyboard and layout pass is described in the checklist below. Not deployed. Opening `/about` or `/inspect` directly works on the dev server; a static host will need a rewrite of every path to `index.html` (a Phase 7 task).
 
 ## Project documents
 
@@ -146,3 +147,16 @@ The model will be fitted on the **MVTec Anomaly Detection (MVTec AD)** dataset, 
 ## License
 
 This repository is public and the project is noncommercial. The plan is to license the original project code under MIT, but no `LICENSE` file has been added yet. The dataset is not part of this repository and keeps its own license (see above).
+
+### Manual browser checklist (not yet done)
+Automated tests cannot open the operating system's file chooser, draw the focus ring, or show layouts. The responsive review of the code is **reviewed, not viewed**. Please check these in a real browser (start both servers as above):
+
+1. **Widths:** in the browser's device mode, look at Home, Demo, Results and About at 360, 768 and 1280 px wide. Look for sideways scrolling, text running off the screen (the DOI link on About, the tables on Results), overlapping items and buttons that are hard to tap.
+2. **Keyboard only (no mouse):** press Tab from the top of each page. The first stop is "Skip to the main content", then Home, Demo, Results, About. Every stop shows a visible focus ring, and the order follows the page.
+3. **Demo file input:** Tab to the file input; it must show a visible focus ring. With it focused, press Enter or Space: the file chooser should open. Choose a JPEG or PNG; the preview appears and "Inspect image" turns on. Then Tab to the button and press Enter.
+4. **Drop zone:** drag a JPEG or PNG onto the dashed box (the hint text changes while you drag). Drag a text file onto it: the same "Choose a JPEG or PNG image" message appears as when you pick one. Drop two files: a note says only the first is used.
+5. **Expandable sections:** on Results and About, focus a section title and press Enter or Space to open and close it.
+6. **Tabs:** after an inspection, Tab to the tab list and use the arrow keys, Home and End.
+7. **Contrast and zoom:** zoom to 200%; check that text stays readable and nothing is cut off. Colour contrast has not been measured (the tests cannot compute it).
+8. **Screen reader (optional):** with VoiceOver, check that the file input is announced with its label and hint.
+Use only a synthetic or your own image; do not use dataset images.

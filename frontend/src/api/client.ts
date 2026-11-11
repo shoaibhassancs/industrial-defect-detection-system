@@ -1,4 +1,5 @@
 import { ApiError } from "./errors";
+import { type MetricsInfo, type ModelInfo, parseMetrics, parseModelInfo } from "./modelTypes";
 import type { CategoryInfo, InspectionResponse } from "./types";
 
 const DEFAULT_BASE_URL = "http://localhost:8000";
@@ -140,4 +141,18 @@ export async function inspectImage(
     });
   }
   return body;
+}
+
+/** GET /api/v1/model */
+export async function getModelInfo(signal?: AbortSignal): Promise<ModelInfo> {
+  const response = await send(`${apiBaseUrl()}${PREFIX}/model`, { signal });
+  return parseModelInfo(await jsonOf(response));
+}
+
+/** GET /api/v1/metrics/{category}: the saved sealed-evaluation results, as the package holds them. */
+export async function getMetrics(category: string, signal?: AbortSignal): Promise<MetricsInfo> {
+  const response = await send(`${apiBaseUrl()}${PREFIX}/metrics/${encodeURIComponent(category)}`, {
+    signal,
+  });
+  return parseMetrics(await jsonOf(response));
 }

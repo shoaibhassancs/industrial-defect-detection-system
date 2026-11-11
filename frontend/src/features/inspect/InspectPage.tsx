@@ -25,6 +25,9 @@ export function InspectPage({ slowAfterMs = 4000, startupRetryMs = 5000 }: Inspe
   const [category, setCategory] = useState("");
   const [chosen, setChosen] = useState<{ file: File; previewUrl: string } | null>(null);
   const [fileProblem, setFileProblem] = useState<string | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const [dropNote, setDropNote] = useState<string | null>(null);
+  const fileInput = useRef<HTMLInputElement>(null);
   const [run, setRun] = useState<Run>({ status: "idle" });
   const abortRef = useRef<AbortController | null>(null);
   const previewRef = useRef<string | null>(null);
@@ -72,6 +75,29 @@ export function InspectPage({ slowAfterMs = 4000, startupRetryMs = 5000 }: Inspe
       setChosen({ file: picked, previewUrl });
       setFileProblem(null);
     }
+  }
+
+  // Dropping uses exactly the same path as picking: onFileChosen -> checkFile. Only the first
+  // file is used. The real file input stays the keyboard route (Tab, then Enter or Space).
+  function onDrop(event: React.DragEvent) {
+    event.preventDefault();
+    setDragging(false);
+    if (running) return;
+    const files = Array.from(event.dataTransfer.files);
+    const first = files[0];
+    if (!first) return;
+    setDropNote(
+      files.length > 1
+        ? `You dropped ${files.length} files. Only the first one, ${first.name}, is used.`
+        : null,
+    );
+    try {
+      // keep the chooser's own display in step with the dropped file where the browser allows it
+      if (fileInput.current) fileInput.current.files = event.dataTransfer.files;
+    } catch {
+      /* not supported here; the page state below is what counts */
+    }
+    void onFileChosen(first);
   }
 
   async function onSubmit(event: React.FormEvent) {
@@ -155,19 +181,46 @@ export function InspectPage({ slowAfterMs = 4000, startupRetryMs = 5000 }: Inspe
               <label htmlFor={fileId} className="block text-sm font-medium">
                 Image (JPEG or PNG, up to {MAX_UPLOAD_MB} MB)
               </label>
-              <input
-                id={fileId}
-                type="file"
-                accept="image/jpeg,image/png"
-                aria-describedby={hintId}
-                aria-invalid={fileProblem ? true : undefined}
-                disabled={running}
-                onChange={(e) => void onFileChosen(e.target.files?.[0])}
-                className="mt-1 block w-full text-sm file:mr-3 file:rounded file:border file:border-slate-500 file:bg-white file:px-3 file:py-1.5"
-              />
+              <div
+                data-testid="drop-area"
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  if (!running) setDragging(true);
+                }}
+                onDragLeave={() => setDragging(false)}
+                onDrop={onDrop}
+                className={`mt-1 rounded border-2 border-dashed p-4 ${
+                  dragging ? "border-slate-900 bg-slate-100" : "border-slate-400"
+                }`}
+              >
+                <p className="mb-2 text-sm text-slate-700">
+                  {dragging
+                    ? "Drop the image to use it."
+                    : "Drag an image into this box, or use the file chooser below."}
+                </p>
+                <input
+                  ref={fileInput}
+                  id={fileId}
+                  type="file"
+                  accept="image/jpeg,image/png"
+                  aria-describedby={hintId}
+                  aria-invalid={fileProblem ? true : undefined}
+                  disabled={running}
+                  onChange={(e) => {
+                    setDropNote(null);
+                    void onFileChosen(e.target.files?.[0]);
+                  }}
+                  className="block w-full text-sm file:mr-3 file:rounded file:border file:border-slate-500 file:bg-white file:px-3 file:py-1.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900"
+                />
+              </div>
               <p id={hintId} className="mt-1 text-xs text-slate-600">
                 Meant for images like the chosen MVTec AD category. Do not upload anything private.
               </p>
+              {dropNote && (
+                <p role="status" className="mt-2 text-sm text-slate-800">
+                  {dropNote}
+                </p>
+              )}
               {fileProblem && (
                 <p role="alert" className="mt-2 text-sm font-medium text-red-800">
                   <span aria-hidden="true">⚠ </span>

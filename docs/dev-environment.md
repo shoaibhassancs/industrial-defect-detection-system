@@ -78,13 +78,14 @@ react-dom 19.3.1. Build and style: Vite 8.3.7, `@vitejs/plugin-react` 6.3.0, Tai
 `@tailwindcss/vite`, TypeScript **6.0.3**. Checks: ESLint 10.14.0, `typescript-eslint` 8.72.2,
 `eslint-plugin-react-hooks` 7.1.1, Prettier 3.9.10. Tests: Vitest 5.1.0 (with `@vitest/coverage-v8`),
 jsdom **29.1.1**, React Testing Library 16.3.3 (+ `@testing-library/dom` 10, `user-event` 14.6.9,
-`jest-dom` 7.0.1), MSW 3.0.4 (mock API), `axe-core` 4.14.0 (automatic accessibility rules).
+`jest-dom` 7.0.1), React Router 7.18.5 (added 2026-11-11 for the page navigation), MSW 3.0.4 (mock API), `axe-core` 4.14.0 (automatic accessibility rules).
 Types from the API: `openapi-typescript` 7.13.0. 319 packages installed by `npm ci` (225 top-level folders), about 213 MB in `node_modules/`.
 
 Why these pins (checked against the npm registry on 2026-11-11):
 - TypeScript is pinned to 6.0.3 because the latest `typescript-eslint` accepts TypeScript below 6.1
   (the newest TypeScript is 7.0.2).
 - jsdom is pinned to 29.x because jsdom 30 needs Node 22.22.2 or newer and this Mac has 22.16.0.
+- `react-router` is pinned to 7.18.5 because every 8.x release needs Node 22.22 or newer (checked on the registry); 7.x needs Node 20 or newer and accepts React 18 or newer.
 - `@types/node` is on the 22 line to match the Node runtime.
 - `openapi-typescript` 7.13.0 declares a peer of `typescript ^5.x`. A package.json `overrides` entry
   lets it use TypeScript 6.0.3. That is a declared-range mismatch we worked around, not a tested
@@ -104,6 +105,7 @@ make format   # Ruff auto-fix and format
 make test     # run the test suite (about 5-6 minutes on the M1 with the model tests)
 make frontend-install  # npm ci in frontend/
 make frontend-check    # frontend format check, lint, type-check, tests, build
+make evidence          # re-make the Home page's evidence snapshot from the saved metrics.json
 make api-contract      # re-export frontend/openapi.json and regenerate the TypeScript types
 ```
 

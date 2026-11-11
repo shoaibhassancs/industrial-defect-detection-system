@@ -1,15 +1,16 @@
-# CI stage 1 (PLAN.md step 0.5): Python lint and tests on Linux.
+# CI stage 1 (PLAN.md step 0.5): Python lint and tests on Linux (job `lint-and-test`).
+# CI stage 3 (PLAN.md step 11): frontend format check, lint, type-check, tests and build
+# (job `frontend`). The two jobs are independent and run in parallel.
 #
-# Runs `make lint` and `make test` on a GitHub-hosted Ubuntu runner (x86_64, like Render).
-# No dataset, no model files and no secrets are needed: the tests build tiny models with random
-# weights and block network access.
+# Runs on GitHub-hosted Ubuntu runners (x86_64, like Render).
+# No dataset, no model files and no secrets are needed: the Python tests build tiny models with
+# random weights and block network access, and the frontend tests use mocked network calls.
 #
-# Later stages arrive with their components (backend + Docker in Phase 5, frontend in Phase 6,
-# end-to-end in Phase 11).
+# Later stages arrive with their components (Docker build, end-to-end in Phase 11).
 #
 # Third-party actions are pinned to full commit hashes (the version is in the comment) so that a
 # moved tag cannot change what runs. Versions and inputs were read from each action's repository
-# on 2026-11-10.
+# on 2026-11-10 (checkout, setup-uv) and 2026-11-11 (setup-node).
 
 name: CI
 
@@ -73,3 +74,50 @@ jobs:
 
       - name: Test
         run: make test
+
+  # The same checks as `make frontend-check`, as separate steps so a failure names its step.
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          # package.json requires >=22.12.0; the development Mac uses 22.16.0.
+          node-version: "22"
+          # package.json has no `packageManager` field, so caching is switched on explicitly.
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Show versions
+        run: |
+          node --version
+          npm --version
+
+      # Installs exactly what package-lock.json says; fails if it and package.json disagree.
+      - name: Install dependencies (from package-lock.json)
+        run: npm ci
+
+      - name: Format check
+        run: npm run format:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npm run typecheck
+
+      # The 4 live-backend tests skip themselves (no LIVE_IMAGE is set).
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build

@@ -27,19 +27,92 @@ describe("the Inspect flow", () => {
     expect(screen.getByRole("button", { name: /inspect image/i })).toBeDisabled();
   });
 
-  it("shows a normal result with score, threshold, rank sentence and three images", async () => {
+  it("shows a normal result: decision, score next to threshold, and the overlay first", async () => {
     const { user } = await chooseAndInspect(pngFile());
     await clickInspect(user);
     const heading = await screen.findByRole("heading", { name: "Result" });
     await waitFor(() => expect(heading).toHaveFocus());
     expect(screen.getByText("Demo decision: Normal")).toBeInTheDocument();
-    expect(screen.getByText("0.2000")).toBeInTheDocument();
-    expect(screen.getByText("0.4321")).toBeInTheDocument();
-    const rank = screen.getByText(/score higher than/i);
-    expect(rank).toHaveTextContent("Score higher than 7 of 42 calibration normal images.");
-    expect(screen.getByRole("img", { name: /^Original:/ })).toBeInTheDocument();
-    expect(screen.getByRole("img", { name: /^Heatmap:/ })).toBeInTheDocument();
+    const section = heading.closest("section")!;
+    // the score and the threshold are in the visible summary, not behind a collapsed section
+    const score = within(section).getAllByText("0.2000")[0]!;
+    const threshold = within(section).getAllByText("0.4321")[0]!;
+    expect(score.closest("details")).toBeNull();
+    expect(threshold.closest("details")).toBeNull();
+    // the rank sentence is in the details
+    expect(section.textContent).toContain("Score higher than 7 of 42 calibration normal images.");
+    // the overlay is the image shown first
+    expect(within(section).getAllByRole("img")).toHaveLength(1);
     expect(screen.getByRole("img", { name: /^Overlay:/ })).toBeInTheDocument();
+  });
+
+  it("shows the heatmap and the original in tabs, with the overlay selected by default", async () => {
+    const { user } = await chooseAndInspect(pngFile());
+    await clickInspect(user);
+    const tabs = await screen.findAllByRole("tab");
+    expect(tabs.map((t) => t.textContent)).toEqual(["Overlay", "Heatmap", "Original"]);
+    expect(tabs.map((t) => t.getAttribute("aria-selected"))).toEqual(["true", "false", "false"]);
+    expect(screen.getByRole("tabpanel")).toHaveAccessibleName("Overlay");
+    await user.click(screen.getByRole("tab", { name: "Heatmap" }));
+    expect(screen.getByRole("tab", { name: "Heatmap" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("img", { name: /^Heatmap:/ })).toBeInTheDocument();
+    expect(screen.queryByRole("img", { name: /^Overlay:/ })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: "Original" }));
+    expect(screen.getByRole("img", { name: /^Original:/ })).toBeInTheDocument();
+  });
+
+  it("moves between the tabs with the arrow keys, Home and End", async () => {
+    const { user } = await chooseAndInspect(pngFile());
+    await clickInspect(user);
+    const overlay = await screen.findByRole("tab", { name: "Overlay" });
+    overlay.focus();
+    await user.keyboard("{ArrowRight}");
+    expect(screen.getByRole("tab", { name: "Heatmap" })).toHaveFocus();
+    expect(screen.getByRole("tab", { name: "Heatmap" })).toHaveAttribute("aria-selected", "true");
+    await user.keyboard("{End}");
+    expect(screen.getByRole("tab", { name: "Original" })).toHaveFocus();
+    await user.keyboard("{ArrowRight}"); // wraps round
+    expect(screen.getByRole("tab", { name: "Overlay" })).toHaveFocus();
+    await user.keyboard("{ArrowLeft}"); // wraps the other way
+    expect(screen.getByRole("tab", { name: "Original" })).toHaveFocus();
+    await user.keyboard("{Home}");
+    expect(screen.getByRole("tab", { name: "Overlay" })).toHaveFocus();
+    // only the selected tab is in the tab order
+    expect(screen.getByRole("tab", { name: "Heatmap" })).toHaveAttribute("tabindex", "-1");
+  });
+
+  it("keeps the decision, the demo-not-certification message and the limits visible, and the explanations in closed sections", async () => {
+    const { user } = await chooseAndInspect(pngFile());
+    await clickInspect(user);
+    const section = (await screen.findByRole("heading", { name: "Result" })).closest("section")!;
+    for (const phrase of [
+      /Demo decision: Normal/,
+      /not a quality certification/,
+      /not a probability or a confidence/,
+      /cannot reliably tell that an image is out of scope/,
+      /only meaningful for bottle images/i,
+    ]) {
+      const hit = within(section).getAllByText(phrase)[0]!;
+      expect(hit.closest("details"), String(phrase)).toBeNull();
+    }
+    const titles = [...section.querySelectorAll("details > summary")].map((x) => x.textContent);
+    expect(titles).toEqual([
+      "Show details",
+      "How to read these results",
+      "How this decision was made",
+    ]);
+    for (const d of section.querySelectorAll("details")) expect(d).not.toHaveAttribute("open");
+    // every explanation is still in the page, inside the first section
+    const details = section.querySelector("details")!;
+    for (const phrase of [
+      /higher means more unusual/,
+      /Threshold \(the cutoff\)/,
+      /not a measure of confidence/,
+      /A display aid/,
+      /not a measured defect size/,
+    ]) {
+      expect(details.textContent).toMatch(phrase);
+    }
   });
 
   it("shows the server's verdict as is: an anomalous result, with the region", async () => {
@@ -66,7 +139,9 @@ describe("the Inspect flow", () => {
     await clickInspect(user);
     const panel = (await screen.findByRole("heading", { name: "Result" })).closest("section")!;
     expect(panel.textContent).not.toMatch(/\b(pass|passed|fail|failed|defective)\b/i);
-    expect(within(panel).getByText(/not a probability or a confidence/i)).toBeInTheDocument();
+    expect(within(panel).getAllByText(/not a probability or a confidence/i).length).toBeGreaterThan(
+      0,
+    );
     expect(within(panel).getAllByText(/not a quality certification/i).length).toBeGreaterThan(0);
   });
 
@@ -102,6 +177,7 @@ describe("the Inspect flow", () => {
   it("describes the heatmap colours as lower and higher scores, not as 'ordinary'", async () => {
     const { user } = await chooseAndInspect(pngFile());
     await clickInspect(user);
+    await user.click(await screen.findByRole("tab", { name: "Heatmap" }));
     const panel = (await screen.findByRole("heading", { name: "Result" })).closest("section")!;
     expect(panel.textContent).toMatch(
       /lower \(darker colours\) or higher \(brighter orange and yellow\)/,

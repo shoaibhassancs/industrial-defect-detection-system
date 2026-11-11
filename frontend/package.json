@@ -18,11 +18,13 @@
     "test": "vitest run",
     "gen:api": "openapi-typescript openapi.json -o src/api/schema.d.ts",
     "test:watch": "vitest",
-    "test:live": "vitest run src/live"
+    "test:live": "vitest run src/live",
+    "gen:evidence": "node scripts/gen-evidence.mjs"
   },
   "dependencies": {
     "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "react-dom": "19.3.1",
+    "react-router": "7.18.5"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

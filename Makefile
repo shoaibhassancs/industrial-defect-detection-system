@@ -1,5 +1,5 @@
 # Shortcuts for common tasks. Targets are added only when they have something to run.
-.PHONY: setup lint format test fit freeze calibrate evaluate figures package infer api-contract frontend-install frontend-check
+.PHONY: setup lint format test fit freeze calibrate evaluate figures package infer api-contract evidence frontend-install frontend-check
 
 setup:  ## Install all workspace packages and dev tools into .venv
 	uv sync --all-packages
@@ -59,6 +59,9 @@ infer:  ## Inspect one image: make infer ARTIFACT=<package folder> IMAGE=<file> 
 api-contract:  ## Re-export the API description and regenerate the frontend's types (no server, no model)
 	cd backend && uv run python -m app.openapi_export ../frontend/openapi.json
 	cd frontend && npm run gen:api
+
+evidence:  ## Re-make the Home page's evidence snapshot from the saved metrics.json (no server, no model)
+	cd frontend && npm run gen:evidence
 
 frontend-install:  ## Install the frontend packages exactly as locked (needs network; uses ~0.2 GB of disk)
 	cd frontend && npm ci

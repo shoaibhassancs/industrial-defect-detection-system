@@ -98,8 +98,8 @@ timings in `decisions.md` entry 058). Full list: [evaluation.md](evaluation.md) 
 
 Trained on, and evaluated with, MVTec AD (CC BY-NC-SA 4.0, MVTec Software GmbH); the figures in
 `evaluation/` contain adapted dataset images and carry that license. No endorsement by MVTec or the
-dataset authors is implied. The project's own code license (MIT is planned) is not yet in force: no
-`LICENSE` file exists.
+dataset authors is implied. The project code has no licence granting reuse rights: no `LICENSE` file
+exists and the owner has decided not to add one (2026-11-11). This does not change the terms above.
 
 ## References
 

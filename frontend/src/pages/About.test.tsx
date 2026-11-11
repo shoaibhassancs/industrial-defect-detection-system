@@ -63,8 +63,9 @@ describe("the About page", () => {
 
   it("does not claim a code licence that has not been granted", () => {
     const { text } = aboutText();
-    expect(text).toMatch(/no licence file has been added yet/);
-    expect(text).toMatch(/no licence is granted for the code/);
+    expect(text).toMatch(/no licence granting reuse rights/);
+    expect(text).toMatch(/does not mean a general licence/);
+    expect(text).not.toMatch(/\bMIT\b/);
   });
 
   it("explains privacy without overclaiming", () => {

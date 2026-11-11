@@ -11,6 +11,18 @@ A personal portfolio web app that demonstrates **industrial visual anomaly detec
 
 A PyTorch **PatchCore** model (via anomalib), fitted only on defect-free training images, produces every result. Nothing is hardcoded or simulated.
 
+## Scope of this portfolio version (owner decision, 2026-11-11)
+This version is a **focused, local `bottle` demo**: a fitted and calibrated PatchCore model, a documented sealed evaluation, a local API and web app, and screenshots. **Only the `bottle` category was evaluated, and no hosted demo exists.** Phases 7 to 14 of the roadmap are **deferred for this version**: not done, and not permanently cancelled. They can be revisited if a concrete need arises.
+
+| Phases | Deferred because |
+|---|---|
+| 7 (hosted demo) and 12 (production deploy) | Paid hosting is ruled out; the local app, screenshots and saved evaluation already show the project. A production deploy is not needed for a local portfolio version. |
+| 8 (more categories), 9 (saved history), 10 (PDF reports, dashboard), 14 (extra model studies) | Beyond the focused `bottle` demo. |
+| 11 (hardening, accessibility, end-to-end tests, observability) | Not needed for a local portfolio version; the basic checks in the README stay. |
+| 13 (final polish) | Revisit if a concrete need arises. |
+
+The sections "Release 1" and "Release 2" below are the original plan, kept for reference; they are not all met.
+
 ## Release 1 (the first milestone)
 - One category: `bottle`.
 - Real PatchCore inference from a versioned artifact.
@@ -45,4 +57,4 @@ Custom PatchCore, PaDiM baseline, out-of-distribution warning, other models, all
 - Development machine: MacBook Air M1, 8 GB RAM. CPU by default; experiments run one at a time.
 - Dataset: MVTec AD (CC BY-NC-SA 4.0). Basic attribution and a non-commercial notice are kept in the docs.
 - Repository: intentionally public (owner's statement, 2026-11-10). The project is noncommercial.
-- Code license: MIT for original code is planned; the `LICENSE` file has not been added yet.
+- Code license: none. No `LICENSE` file exists and the owner has decided not to add one (2026-11-11); the code is public and viewable, but no reuse licence is granted. This does not change the terms for the dataset, figures or weights.

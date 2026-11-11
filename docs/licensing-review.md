@@ -15,7 +15,7 @@
 
 | # | Item | Status | One line |
 |---|---|---|---|
-| 1 | `LICENSE` file for the code | Verified: none exists. **Owner decision** | MIT is planned, not in force. |
+| 1 | `LICENSE` file for the code | Verified: none exists. **Owner decision** | Owner decided on 2026-11-11 not to add one (decisions.md entry 091); the earlier MIT plan is dropped. |
 | 2 | Evaluation figures | Verified: **already on the public remote.** Wording corrected (A1); owner will ask MVTec (A2) | Adapted MVTec images, with a notice; sufficiency unresolved. |
 | 3 | A7: ImageNet terms | **Unverified** | Official ImageNet pages could not be opened. |
 | 4 | A17: Kaggle source | **Unverified** | No Kaggle page could be read; the official MVTec page could not be opened either. |

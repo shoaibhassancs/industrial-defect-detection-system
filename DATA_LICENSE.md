@@ -7,7 +7,7 @@ This file says which parts of this repository have which license. It is a plain-
 | Material | Owner | License | In this repository? |
 |---|---|---|---|
 | MVTec AD images and masks | MVTec Software GmbH | Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) | **No.** Not committed (`/data/` is git-ignored). |
-| Original project code | The project owner | MIT is planned, but **no `LICENSE` file exists yet**, so no code license is granted at the moment | Yes |
+| Original project code | The project owner | **No `LICENSE` file exists and none is planned** (owner decision, 2026-11-11), so the code has no licence granting reuse rights | Yes |
 | Third-party libraries and pretrained weights | Their authors | Their own licenses | Not copied here; installed through `uv`. The pretrained backbone weights are downloaded by the fit step and are used; their recorded terms are in [docs/data.md](docs/data.md). |
 
 ## The dataset: MVTec AD
@@ -48,4 +48,4 @@ See [docs/data.md](docs/data.md).
 
 ## Original project code
 
-The plan is to release the original code of this project under the MIT license, but the `LICENSE` file has not been added yet. Until it is, no license is granted for the code. When it is added, it will cover original code only, not the dataset or third-party material.
+The project code currently has no licence granting reuse rights: no `LICENSE` file exists, and the owner has decided not to add one (2026-11-11). The repository is public and viewable, but that does not mean the owner grants a general licence to copy, modify or redistribute the code. This does not change the terms for the dataset, the figures or the model weights described in this file.

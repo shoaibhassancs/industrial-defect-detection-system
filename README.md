@@ -4,13 +4,13 @@ A portfolio project that demonstrates **visual anomaly detection** on industrial
 
 The model is **PatchCore** (PyTorch, via the anomalib library), fitted only on defect-free images from the **MVTec AD** dataset. It never needs examples of defects.
 
-> **Status: local portfolio project.** Release 1 (one category, `bottle`) runs locally: two PatchCore models are fitted, calibrated and evaluated once on the sealed test set (results in [docs/evaluation.md](docs/evaluation.md)), with a local API and web app. There is no hosted demo (see "Demo status" below). See [SCOPE.md](SCOPE.md) for what is planned and [decisions.md](decisions.md) for the running log of decisions and progress.
+> **Status: local portfolio project.** Release 1 (one category, `bottle`) runs locally: two PatchCore models are fitted, calibrated and evaluated once on the sealed test set (results in [docs/evaluation.md](docs/evaluation.md)), with a local API and web app. There is no hosted demo (see "Demo status" below). See [SCOPE.md](SCOPE.md) for what is in scope and what is deferred, and [decisions.md](decisions.md) for the running log of decisions and progress.
 
 > **Educational demo.** This is not a certified quality-control or inspection system. Results are only meaningful for supported categories photographed like the MVTec AD images, and the anomaly score is not a probability or a confidence.
 
 ## Demo status
 
-There is **no hosted live demo** in this portfolio version. Hosting the model needs more memory than any free option reviewed reliably offers, and paid hosting was ruled out (owner decision, 2026-11-11; hosted deployment is **deferred, not done**). The app runs locally (see below). Evidence that it works (see [docs/local-walkthrough.md](docs/local-walkthrough.md)): the saved evaluation on the MVTec `bottle` test set ([docs/evaluation.md](docs/evaluation.md), the only evidence about detection accuracy), local run instructions, and screenshots and a short recording of the local app (these show the workflow, not accuracy). See [docs/deployment-readiness.md](docs/deployment-readiness.md).
+There is **no hosted live demo** in this portfolio version. Hosting the model needs more memory than any free option reviewed reliably offers, and paid hosting was ruled out (owner decision, 2026-11-11; hosted deployment is **deferred, not done**). The app runs locally (see below). Evidence that it works (see [docs/local-walkthrough.md](docs/local-walkthrough.md)): the saved evaluation on the MVTec `bottle` test set ([docs/evaluation.md](docs/evaluation.md), the only evidence about detection accuracy), local run instructions, and screenshots of the local app (these show the workflow, not accuracy; no recording exists). See [docs/deployment-readiness.md](docs/deployment-readiness.md). Scope of this version: a focused local `bottle` demo; only `bottle` was evaluated, and later roadmap phases (hosting, more categories, saved history, PDF reports, production hardening, extra model studies) are deferred, not done (see [SCOPE.md](SCOPE.md)).
 
 ## Screenshots of the local app
 
@@ -69,8 +69,9 @@ On Linux, a GitHub Actions run (Ubuntu, x86_64, 2026-11-09, commit `90624b0`) in
 ## Run inference locally
 
 Needs a model package folder (the files are not in this repository; they are made by the fit, freeze,
-calibrate and package steps in [docs/evaluation.md](docs/evaluation.md) §8, or fetched from an
-artifact store once one is chosen) and an image of your own:
+calibrate and package steps in [docs/evaluation.md](docs/evaluation.md) §8; a private Hugging Face
+repository was chosen as the future store ([ADR-0003](docs/adr/ADR-0003-artifact-store.md)), but it has not been
+created and **nothing has been uploaded**) and an image of your own:
 
 ```
 uv run python -m defect_core.infer --artifact artifacts/bottle_wide_resnet50_2_tv_in1k_v1.0.0_release path/to/image.png
@@ -181,10 +182,10 @@ The models are fitted on the **MVTec Anomaly Detection (MVTec AD)** dataset, rel
 
 ## License
 
-This repository is public and the project is noncommercial. The plan is to license the original project code under MIT, but no `LICENSE` file has been added yet. The dataset is not part of this repository and keeps its own license (see above).
+This repository is public and the project is noncommercial. **The project code currently has no licence granting reuse rights**: no `LICENSE` file exists, and the owner has decided not to add one (2026-11-11). The repository being public and viewable does not mean the owner grants a general licence to copy, modify or redistribute the code. This does not change the terms for the MVTec data, the figures or the model weights, which are described separately above and in [DATA_LICENSE.md](DATA_LICENSE.md).
 
-### Manual browser checklist (not yet done)
-Automated tests cannot open the operating system's file chooser, draw the focus ring, or show layouts. The responsive review of the code is **reviewed, not viewed**. Please check these in a real browser (start both servers as above):
+### Manual browser checklist (owner reports a browser check; details not recorded)
+Automated tests cannot open the operating system's file chooser, draw the focus ring, or show layouts. The owner reports having checked the app in a real browser (2026-11-11). Which of the items below were covered, and the results, were **not recorded**, and Claude did not view the app in a browser, so the items are not marked individually. Colour contrast, other browsers, phones and screen readers are **not verified**. To repeat the check, use a real browser (start both servers as above):
 
 1. **Widths:** in the browser's device mode, look at Home, Demo, Results and About at 360, 768 and 1280 px wide. Look for sideways scrolling, text running off the screen (the DOI link on About, the tables on Results), overlapping items and buttons that are hard to tap.
 2. **Keyboard only (no mouse):** press Tab from the top of each page. The first stop is "Skip to the main content", then Home, Demo, Results, About. Every stop shows a visible focus ring, and the order follows the page.

@@ -85,14 +85,35 @@ that). Nothing was committed or pushed.
 **README use:** the README shows only `a.png` (Home), `c.png` (Demo, with the calibration caption and the MVTec
 attribution written directly under it) and `e.png` (Results). `b.png`, `d.png` and `f.png` stay in the folder.
 
-**Recapture status: NOT DONE.** `c.png` (tooltip overlap) and `d.png` (footer cut off) are still the original
-files (unchanged since 2026-11-11 07:51). Recapturing needs the running app in a browser with the same
-calibration image; I did not run the server or capture anything. Until then the README's `c.png` still shows the
-tooltip. Keep the filenames when replacing them, so the README links stay valid, and check again that no file
-name, path or other private detail is visible.
+**Owner review and acceptance (2026-11-11):** the owner viewed the existing screenshots on GitHub and judged
+them good enough as they are. They were **not recaptured and not changed**: `c.png` still has the small
+"No file chosen" tooltip and `d.png` still has the partly cut-off footer, and these are accepted as they
+are. The README caption under `c.png` carries the calibration wording and the MVTec attribution. This
+acceptance is the owner's judgement (reported to Claude; Claude did not view GitHub).
 
 **Git status (checked 2026-11-11):** `screenshots/` is **untracked and not ignored**. A broad `git add` would
 include it, and it would become public if pushed. `c.png` and `d.png` contain an adapted MVTec image, and
 whether publishing that needs anything more is unresolved ([licensing-review.md](licensing-review.md)).
 Nothing was moved or ignored; that is your decision.
 
+
+## 7. Local run-through on 2026-11-11 (API and dev server checks)
+
+Run on the MacBook Air M1 with the existing package `bottle_wide_resnet50_2_tv_in1k_v1.0.0_release` and the
+README commands. Nothing was retrained, recalibrated or re-evaluated; no dependency was reinstalled.
+
+| Check | Result |
+|---|---|
+| API starts (`uvicorn --factory app.main:create_app ...`) | PASS (ready after about 8 s) |
+| `GET /api/v1/health` | PASS (HTTP 200, `{"status":"ok"}`) |
+| `GET /api/v1/ready` | PASS (HTTP 200, model 1.0.0, category `bottle`) |
+| One inspection of the calibration image `002.png` (training file) | PASS (HTTP 200 in about 0.5 s; prediction `normal`, score 1.2446 against threshold 1.3682, matching `c.png`) |
+| Web dev server serves `/`, `/inspect`, `/model` | PASS (HTTP 200 each; page title "DefectLens") |
+| CORS preflight from `http://localhost:5173` to `POST /api/v1/inspections` | PASS (HTTP 200) |
+| Browser pass (layout, keyboard, file chooser, drop zone) | NOT RUN by Claude; the owner reports a browser check, details not recorded |
+
+Notes: a backend and a dev server from an earlier run were already listening on ports 8000 and 5173; they were
+stopped and a fresh API was started. The already-running dev server was used for the page checks (not
+restarted). Both servers were stopped afterwards. This shows the services work together on this machine. It
+is not evidence of detection accuracy (the only evidence for that is the saved evaluation), and it does not
+cover other browsers, phones or screen readers.

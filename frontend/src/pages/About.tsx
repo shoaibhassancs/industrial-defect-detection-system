@@ -101,9 +101,11 @@ export default function About() {
 
         <Detail title="Code licence">
           <p>
-            The plan is to release the original code of this project under the MIT licence, but no
-            licence file has been added yet. Until it is, no licence is granted for the code. When
-            it is added, it will cover original code only, not the dataset or third-party material.
+            The project code currently has no licence granting reuse rights: no licence file has
+            been added, and the owner has decided not to add one. The repository is public and
+            viewable, but that does not mean a general licence to copy, modify or redistribute the
+            code is granted. This does not change the terms for the dataset, the figures or the
+            model weights.
           </p>
         </Detail>
 

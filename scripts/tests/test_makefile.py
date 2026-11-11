@@ -74,3 +74,10 @@ def test_infer_needs_an_artifact_and_an_image_and_passes_them_on() -> None:
     out = make("infer", "ARTIFACT=pkg", "IMAGE=pic.png", "OUT=results").stdout
     assert 'python -m defect_core.infer --artifact "pkg" "pic.png" --out "results"' in out
     assert "--out" not in make("infer", "ARTIFACT=pkg", "IMAGE=pic.png").stdout
+
+
+def test_the_store_targets_run_the_scripts_and_there_is_no_upload_target() -> None:
+    assert "scripts/upload_artifacts.py" in make("store-plan").stdout
+    assert "--upload" not in make("store-plan").stdout
+    assert "scripts/download_artifacts.py" in make("store-download").stdout
+    assert make("store-upload").returncode != 0

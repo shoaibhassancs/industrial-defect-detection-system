@@ -1,0 +1,45 @@
+{
+  "licence_status": "UNVERIFIED. Choosing a private store does not establish that uploading these weights is permitted. The weights are treated as material derived from MVTec AD (CC BY-NC-SA 4.0, non-commercial) as a precaution; the terms of the ImageNet data behind the pretrained backbone are not verified. This is the project's cautious policy, not a legal finding.",
+  "packages": {
+    "bottle_resnet18_tv_in1k_v1.0.0_release": {
+      "files": {
+        "NOTICE.md": {
+          "bytes": 2845,
+          "sha256": "6d0c051f69cddd6f249dce621652e3d941544342921a718c95ccf0fc8ddf3848"
+        },
+        "manifest.json": {
+          "bytes": 23101,
+          "sha256": "b2201ca8dbc3402c294d2982a1f42d21ddbe5559455a373633d6409e090dc2a5"
+        },
+        "model.safetensors": {
+          "bytes": 37425984,
+          "sha256": "e91b87e2fb1984fc5b34695f4462a1b9a571d26e6829aed07b3a70c6ccfe2720"
+        }
+      }
+    },
+    "bottle_wide_resnet50_2_tv_in1k_v1.0.0_release": {
+      "files": {
+        "NOTICE.md": {
+          "bytes": 2852,
+          "sha256": "faad5f235189214da2b60b22d9386c517ac17239b1e8334312165bb37e95e482"
+        },
+        "manifest.json": {
+          "bytes": 48019,
+          "sha256": "f072b2709f55acd61456841dd105f168378a286491be394c973b4eacf935257b"
+        },
+        "model.safetensors": {
+          "bytes": 204703520,
+          "sha256": "465f83449447ad9df33eb28b09a3372fb2000a96055ebc71fea7b2dafa5b0b7c"
+        }
+      }
+    }
+  },
+  "schema": 1,
+  "status": "planned",
+  "store": {
+    "repo_id": "shoaibxhassan/defectlens-bottle-models",
+    "revision": null,
+    "type": "huggingface-model-repo",
+    "visibility": "private"
+  }
+}

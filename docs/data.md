@@ -79,7 +79,7 @@ So opening the test set is a deliberate, logged act of a different component, an
 
 ## Processed and derived images
 
-Anything made from dataset images (thumbnails, heatmaps, overlays, resized or re-encoded copies) is modified material and keeps the attribution in [DATA_LICENSE.md](../DATA_LICENSE.md). So far, nothing of that kind has been published; the only such files are local and git-ignored.
+Anything made from dataset images (thumbnails, heatmaps, overlays, resized or re-encoded copies) is modified material and keeps the attribution in [DATA_LICENSE.md](../DATA_LICENSE.md). Some of it is already public: the four evaluation figures (`evaluation/*/v1.0.0/bottle/figures/*.png`) are tracked in Git and have been on the public GitHub repository since 2026-11-10 (checked 2026-11-11: the repository is public and all four files could be fetched without logging in). They contain MVTec AD images, resized and overlaid with heatmaps and outlines, and they carry [evaluation/NOTICE.md](../evaluation/NOTICE.md). Whether that notice is sufficient, and whether their publication needs MVTec's confirmation, is **unresolved** (see [licensing-review.md](licensing-review.md)). Other local sample sheets and histograms are written to `data/processed/`, which is git-ignored.
 
 ## Pretrained weights
 

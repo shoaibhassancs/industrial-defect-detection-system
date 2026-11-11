@@ -4,9 +4,27 @@ A portfolio project that demonstrates **visual anomaly detection** on industrial
 
 The model is **PatchCore** (PyTorch, via the anomalib library), fitted only on defect-free images from the **MVTec AD** dataset. It never needs examples of defects.
 
-> **Status: early development.** Release 1 (one category, `bottle`) has not been built yet. There is no live demo, no trained model, and no results to report. See [SCOPE.md](SCOPE.md) for what is planned and [decisions.md](decisions.md) for the running log of decisions and progress.
+> **Status: local portfolio project.** Release 1 (one category, `bottle`) runs locally: two PatchCore models are fitted, calibrated and evaluated once on the sealed test set (results in [docs/evaluation.md](docs/evaluation.md)), with a local API and web app. There is no hosted demo (see "Demo status" below). See [SCOPE.md](SCOPE.md) for what is planned and [decisions.md](decisions.md) for the running log of decisions and progress.
 
 > **Educational demo.** This is not a certified quality-control or inspection system. Results are only meaningful for supported categories photographed like the MVTec AD images, and the anomaly score is not a probability or a confidence.
+
+## Demo status
+
+There is **no hosted live demo** in this portfolio version. Hosting the model needs more memory than any free option reviewed reliably offers, and paid hosting was ruled out (owner decision, 2026-11-11; hosted deployment is **deferred, not done**). The app runs locally (see below). Evidence that it works (see [docs/local-walkthrough.md](docs/local-walkthrough.md)): the saved evaluation on the MVTec `bottle` test set ([docs/evaluation.md](docs/evaluation.md), the only evidence about detection accuracy), local run instructions, and screenshots and a short recording of the local app (these show the workflow, not accuracy). See [docs/deployment-readiness.md](docs/deployment-readiness.md).
+
+## Screenshots of the local app
+
+These show the workflow of the local web app. They are **not evidence of detection accuracy**; that evidence is the saved test-set evaluation in [docs/evaluation.md](docs/evaluation.md).
+
+![Home page of the local app](screenshots/a.png)
+
+![Demo page with a calibration example](screenshots/c.png)
+
+*Demo page. The image is a **calibration example** (an MVTec AD training image, adapted by the app's overlay), used only to show the workflow, not detection accuracy. Dataset: MVTec AD, © MVTec Software GmbH, CC BY-NC-SA 4.0; this project is not endorsed by MVTec (see [docs/data.md](docs/data.md) and [DATA_LICENSE.md](DATA_LICENSE.md)).*
+
+![Results page with the saved test-set numbers](screenshots/e.png)
+
+More screenshots (`b.png` empty Demo, `d.png` overlay and footer, `f.png` About) are in [screenshots/](screenshots/). See [docs/local-walkthrough.md](docs/local-walkthrough.md).
 
 ## What exists so far
 
@@ -31,7 +49,10 @@ The model is **PatchCore** (PyTorch, via the anomalib library), fitted only on d
 - A local inference command (`python -m defect_core.infer`, see below) that verifies a package and inspects one image.
 - Data notes and licensing: [docs/data.md](docs/data.md) and [DATA_LICENSE.md](DATA_LICENSE.md).
 
-Nothing else yet. The roadmap is private for now.
+- A local web app (`frontend/`, React): Home, Demo, Results and About pages that call the local API (see "Run the web app locally"). No hosted demo.
+- A short guide to running and showing it locally: [docs/local-walkthrough.md](docs/local-walkthrough.md).
+
+The roadmap is private for now.
 
 ## Set up and check
 
@@ -70,6 +91,16 @@ The model only makes sense for images like the category it was fitted on (MVTec 
 bottle seen from above, centred, controlled lighting) and **cannot reliably tell that an image is out
 of scope**: a photo of something else will usually be called "Anomalous" with a high score. This is
 an educational demo, not a quality-control system.
+
+## Model package store (planned, not uploaded)
+
+The model packages are not in git. They are planned to live in a **private Hugging Face model repository**
+([ADR-0003](docs/adr/ADR-0003-artifact-store.md)); **nothing has been created or uploaded**, and whether
+uploading the weights is permitted is **unverified**. [`artifacts.lock.json`](artifacts.lock.json) lists
+every file's size and SHA-256. `make store-plan` shows what an upload would send (no network, no token).
+`make store-download` (after an upload, with a read-only token in `DEFECTLENS_HF_READ_TOKEN`) downloads the
+pinned commit, refuses anything that differs from the lock, and loads each package. Tokens are never
+stored in the repository.
 
 ## Run the API locally
 
@@ -134,15 +165,19 @@ The **Results page** reads `GET /api/v1/model` and `/api/v1/metrics/bottle`, whi
 - [decisions.md](decisions.md): dated log of decisions and actions.
 - [docs/dev-environment.md](docs/dev-environment.md): machine, tools, and library versions.
 - [docs/adr/ADR-0002-model-and-serving.md](docs/adr/ADR-0002-model-and-serving.md): Checkpoint A, the rule that names the headline model and the frozen calibration settings.
+- [docs/adr/ADR-0003-artifact-store.md](docs/adr/ADR-0003-artifact-store.md): where the model packages are planned to be stored (a private Hugging Face repository; nothing is uploaded yet; licence status unverified).
 - [docs/data.md](docs/data.md): the dataset, its layout, citation, and what has been checked.
 - [evaluation/NOTICE.md](evaluation/NOTICE.md): dataset attribution and license terms for the figures (adapted MVTec AD images).
 - [docs/evaluation.md](docs/evaluation.md): how the models were evaluated and what the saved results show, including the false alarms and the limits.
 - [docs/model-card.md](docs/model-card.md): short model card (intended use, limits, results).
 - [DATA_LICENSE.md](DATA_LICENSE.md): dataset license and attribution, and what is and is not redistributed.
+- [docs/licensing-review.md](docs/licensing-review.md): read-only review of the open licence and publication questions (sources read, what is unverified, options; no decision made).
+- [docs/local-walkthrough.md](docs/local-walkthrough.md): short guide to running the app locally and to recording or screenshotting it (calibration example only; shows the workflow, not accuracy).
+- [docs/deployment-readiness.md](docs/deployment-readiness.md): review of Docker, CPU-only torch and Render (official pages read 2026-11-11; what is unverified; options that depend on MVTec's reply or the artifact-store decision). Nothing is built or deployed.
 
 ## Dataset and attribution
 
-The model will be fitted on the **MVTec Anomaly Detection (MVTec AD)** dataset, released by MVTec under the **CC BY-NC-SA 4.0** license, which prohibits commercial use. This project is a non-commercial educational demo. The local copy used for development is not included in this repository; the project owner says it was downloaded from Kaggle, and it has not been compared file by file with the official MVTec archive (only the per-category image counts match the official paper). Attribution, the citation, and notes on processed images are in [DATA_LICENSE.md](DATA_LICENSE.md) and [docs/data.md](docs/data.md); both the CVPR 2019 and IJCV 2021 citations are included. Official page: <https://www.mvtec.com/research-teaching/datasets/mvtec-ad>.
+The models are fitted on the **MVTec Anomaly Detection (MVTec AD)** dataset, released by MVTec under the **CC BY-NC-SA 4.0** license, which prohibits commercial use. This project is a non-commercial educational demo. The local copy used for development is not included in this repository; the project owner says it was downloaded from Kaggle, and it has not been compared file by file with the official MVTec archive (only the per-category image counts match the official paper). Attribution, the citation, and notes on processed images are in [DATA_LICENSE.md](DATA_LICENSE.md) and [docs/data.md](docs/data.md); both the CVPR 2019 and IJCV 2021 citations are included. Official page: <https://www.mvtec.com/research-teaching/datasets/mvtec-ad>.
 
 ## License
 

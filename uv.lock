@@ -22,6 +22,7 @@ dev = [
     { name = "ruff" },
 ]
 scripts = [
+    { name = "huggingface-hub" },
     { name = "matplotlib" },
     { name = "numpy" },
     { name = "pillow" },

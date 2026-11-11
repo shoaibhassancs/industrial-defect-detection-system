@@ -1,5 +1,5 @@
 # Shortcuts for common tasks. Targets are added only when they have something to run.
-.PHONY: setup lint format test fit freeze calibrate evaluate figures package infer api-contract evidence frontend-install frontend-check
+.PHONY: setup lint format test fit freeze calibrate evaluate figures package infer store-plan store-download api-contract evidence frontend-install frontend-check
 
 setup:  ## Install all workspace packages and dev tools into .venv
 	uv sync --all-packages
@@ -54,6 +54,15 @@ package:  ## Package each calibrated, evaluated model (reads only `calib` images
 infer:  ## Inspect one image: make infer ARTIFACT=<package folder> IMAGE=<file> [OUT=<folder>]
 	@test -n "$(ARTIFACT)" -a -n "$(IMAGE)" || { echo "usage: make infer ARTIFACT=<package folder> IMAGE=<image file> [OUT=<folder>]"; exit 1; }
 	uv run python -m defect_core.infer --artifact "$(ARTIFACT)" "$(IMAGE)" $(if $(OUT),--out "$(OUT)")
+
+# --- the artifact store (O3, ADR-0003): a private Hugging Face repository, nothing uploaded yet -----
+# There is deliberately no make target for the upload: it needs the owner's approval of the plan and
+# is run by hand (see docs/adr/ADR-0003-artifact-store.md).
+store-plan:  ## Show what an upload would send (files, sizes, SHA-256, visibility); no network, no token
+	uv run python scripts/upload_artifacts.py
+
+store-download:  ## Download, verify and load the packages pinned in artifacts.lock.json (read token in env)
+	uv run python scripts/download_artifacts.py
 
 # --- the web app (Phase 6) ---------------------------------------------------------------------
 api-contract:  ## Re-export the API description and regenerate the frontend's types (no server, no model)

@@ -25,6 +25,7 @@ scripts = [
     "matplotlib",
     "safetensors",
     "torch",
+    "huggingface-hub",  # scripts/upload_artifacts.py and download_artifacts.py (private store, O3)
 ]
 
 [tool.ruff]

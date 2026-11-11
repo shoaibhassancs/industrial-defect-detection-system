@@ -7,6 +7,7 @@ from typing import Any
 from fastapi import APIRouter, Request
 
 from app.core.errors import ModelNotReady, NotFound
+from app.schemas import CategoryInfo, error_responses
 from app.services.inference import READY, InferenceService
 
 router = APIRouter(tags=["model"])
@@ -49,7 +50,7 @@ def _summary(service: InferenceService) -> dict[str, Any] | None:
     }
 
 
-@router.get("/categories")
+@router.get("/categories", response_model=list[CategoryInfo], responses=error_responses(503))
 async def categories(request: Request) -> list[dict[str, Any]]:
     """Supported categories with their calibration and a short evaluation summary."""
     service = _service(request)
@@ -68,7 +69,7 @@ async def categories(request: Request) -> list[dict[str, Any]]:
     ]
 
 
-@router.get("/model")
+@router.get("/model", responses=error_responses(503))
 async def model(request: Request) -> dict[str, Any]:
     """What the model is, how it was calibrated, and what it can not do."""
     service = _service(request)
@@ -102,7 +103,7 @@ async def model(request: Request) -> dict[str, Any]:
     }
 
 
-@router.get("/metrics/{category}")
+@router.get("/metrics/{category}", responses=error_responses(404, 422, 503))
 async def metrics(category: str, request: Request) -> dict[str, Any]:
     """Sealed-evaluation results for a category (from files checked against the package)."""
     service = _service(request)

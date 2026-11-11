@@ -57,3 +57,7 @@ frontend/dist/
 
 # ---- Logs ------------------------------------------------------------------
 *.log
+
+# Frontend test output
+frontend/coverage/
+*.tsbuildinfo

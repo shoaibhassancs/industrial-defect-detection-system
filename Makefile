@@ -1,5 +1,5 @@
 # Shortcuts for common tasks. Targets are added only when they have something to run.
-.PHONY: setup lint format test fit freeze calibrate evaluate figures package infer
+.PHONY: setup lint format test fit freeze calibrate evaluate figures package infer api-contract frontend-install frontend-check
 
 setup:  ## Install all workspace packages and dev tools into .venv
 	uv sync --all-packages
@@ -54,3 +54,14 @@ package:  ## Package each calibrated, evaluated model (reads only `calib` images
 infer:  ## Inspect one image: make infer ARTIFACT=<package folder> IMAGE=<file> [OUT=<folder>]
 	@test -n "$(ARTIFACT)" -a -n "$(IMAGE)" || { echo "usage: make infer ARTIFACT=<package folder> IMAGE=<image file> [OUT=<folder>]"; exit 1; }
 	uv run python -m defect_core.infer --artifact "$(ARTIFACT)" "$(IMAGE)" $(if $(OUT),--out "$(OUT)")
+
+# --- the web app (Phase 6) ---------------------------------------------------------------------
+api-contract:  ## Re-export the API description and regenerate the frontend's types (no server, no model)
+	cd backend && uv run python -m app.openapi_export ../frontend/openapi.json
+	cd frontend && npm run gen:api
+
+frontend-install:  ## Install the frontend packages exactly as locked (needs network; uses ~0.2 GB of disk)
+	cd frontend && npm ci
+
+frontend-check:  ## Frontend format check, lint, type-check, tests and production build
+	cd frontend && npm run format:check && npm run lint && npm run typecheck && npm test && npm run build

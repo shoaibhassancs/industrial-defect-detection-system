@@ -91,6 +91,33 @@ PNG data URLs); nothing is stored. Only one inspection runs at a time; others wa
 (`RATE_LIMIT`); behind a proxy set `TRUSTED_PROXY_HOPS` (see `.env.example`; the right value for
 Render is **unverified**). This is a local development setup: not deployed, no container image yet.
 
+## Run the web app locally
+
+The web app (`frontend/`) is a static single-page app: it runs in the browser, holds no model and talks
+to the API above. It needs Node 22.12 or newer (tested here with 22.16.0) and about 0.2 GB of disk for
+its packages. Use two terminals:
+
+```
+# terminal 1: the API (see above), allowing the web app's address
+export MODEL_DIR=artifacts/bottle_wide_resnet50_2_tv_in1k_v1.0.0_release
+export ALLOWED_ORIGINS=http://localhost:5173
+uv run uvicorn --factory app.main:create_app --app-dir backend --port 8000 --no-access-log
+
+# terminal 2: the web app
+make frontend-install          # npm ci: installs exactly what package-lock.json says
+cd frontend && npm run dev     # http://localhost:5173
+```
+
+Choose a category, choose a JPEG or PNG image and press "Inspect image". The result shows the demo
+decision, the anomaly score next to the threshold, the rank among the 42 calibration images, and the
+original, heatmap and overlay images. The API address is `VITE_API_BASE_URL` (default
+`http://localhost:8000`; see [frontend/.env.example](frontend/.env.example)). Checks: `make frontend-check`
+(format, lint, type-check, tests, build). The TypeScript types are generated from the API's OpenAPI
+description: after changing an endpoint run `make api-contract`; a backend test fails if the committed
+`frontend/openapi.json` is out of date. What exists so far: the Inspect page only (Phase 6 steps 0 to 6;
+the Model and About pages, routing, a drop zone, responsive and keyboard passes, and the sample gallery
+are not built, and no dataset image is included in the web app). Not deployed.
+
 ## Project documents
 
 - [SCOPE.md](SCOPE.md): what the project is and is not.

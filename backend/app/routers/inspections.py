@@ -15,7 +15,7 @@ from slowapi import Limiter
 
 from app.core.errors import FileTooLarge, ModelNotReady, UnsupportedCategory
 from app.core.settings import Settings
-from app.schemas import InspectionResponse
+from app.schemas import InspectionResponse, error_responses
 from app.services.inference import READY, InferenceService
 from app.services.validation import reencode_png, validate_upload
 
@@ -35,7 +35,11 @@ def _png_of(array) -> bytes:
 def build_router(settings: Settings, limiter: Limiter) -> APIRouter:
     router = APIRouter(tags=["inspections"])
 
-    @router.post("/inspections", response_model=InspectionResponse)
+    @router.post(
+        "/inspections",
+        response_model=InspectionResponse,
+        responses=error_responses(413, 415, 422, 429, 500, 503),
+    )
     @limiter.limit(settings.rate_limit)
     async def create_inspection(
         request: Request,

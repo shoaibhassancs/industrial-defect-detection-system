@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from pydantic import BaseModel
 
 
@@ -52,6 +54,18 @@ class InspectionResponse(BaseModel):
     disclaimer: str
 
 
+class CategoryInfo(BaseModel):
+    """One supported category (``GET /api/v1/categories``)."""
+
+    id: str
+    display_name: str
+    kind: str  # "object" or "texture"
+    threshold: float
+    alpha: float
+    calib_n: int
+    metrics_summary: dict[str, Any] | None  # sealed-test summary; see the evaluation document
+
+
 class ErrorBody(BaseModel):
     code: str
     message: str
@@ -61,3 +75,22 @@ class ErrorBody(BaseModel):
 
 class ErrorEnvelope(BaseModel):
     error: ErrorBody
+
+
+def error_responses(*statuses: int) -> dict[int | str, dict]:
+    """OpenAPI ``responses`` entries: each listed status is documented as the error envelope.
+
+    Without this, FastAPI documents only FastAPI's own default 422 shape, which this API does not
+    return. The generated frontend types are built from this description.
+    """
+    descriptions = {
+        404: "Not found",
+        413: "Upload too large (FILE_TOO_LARGE)",
+        415: "Not a JPEG or PNG (UNSUPPORTED_MEDIA_TYPE)",
+        422: "Invalid request or image (VALIDATION_ERROR, UNSUPPORTED_CATEGORY, INVALID_IMAGE, "
+        "IMAGE_DIMENSIONS)",
+        429: "Rate limited (RATE_LIMITED); see the Retry-After header",
+        500: "Server error (INFERENCE_FAILED, INTERNAL_ERROR)",
+        503: "Not ready or busy (MODEL_NOT_READY, BUSY); see the Retry-After header",
+    }
+    return {s: {"model": ErrorEnvelope, "description": descriptions[s]} for s in statuses}

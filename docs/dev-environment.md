@@ -25,7 +25,7 @@ Consequences for the project:
 | Python | 3.12.16 (pinned by `.python-version`, `requires-python >=3.12,<3.13`) | Everything |
 | make | GNU Make 3.81 | Shortcuts in the `Makefile` |
 | Docker | 29.9.2 | Installed. Not used yet (Phase 0F container test, Phase 5 backend image). |
-| Node | v22.16.0 | Installed. Not used until Phase 6 (frontend). |
+| Node | v22.16.0 | Installed; used by `frontend/` (Phase 6). npm 10.9.2. |
 
 ## Key libraries (from `uv.lock`)
 
@@ -71,6 +71,30 @@ Adding them added 306 lines to `uv.lock` and changed no existing pin. **Native m
 resident after load and warm-up and about 898 MB after three inspections of a 400 x 300 image (about
 0.27-0.31 s each over HTTP, one thread).
 
+## Frontend stack (added 2026-11-11 for Phase 6; installed locally with npm, versions pinned by `frontend/package-lock.json`)
+
+`frontend/` is a standalone npm project (not part of the uv workspace). Runtime: React 19.3.1 and
+react-dom 19.3.1. Build and style: Vite 8.3.7, `@vitejs/plugin-react` 6.3.0, Tailwind CSS 4.3.5 with
+`@tailwindcss/vite`, TypeScript **6.0.3**. Checks: ESLint 10.14.0, `typescript-eslint` 8.72.2,
+`eslint-plugin-react-hooks` 7.1.1, Prettier 3.9.10. Tests: Vitest 5.1.0 (with `@vitest/coverage-v8`),
+jsdom **29.1.1**, React Testing Library 16.3.3 (+ `@testing-library/dom` 10, `user-event` 14.6.9,
+`jest-dom` 7.0.1), MSW 3.0.4 (mock API), `axe-core` 4.14.0 (automatic accessibility rules).
+Types from the API: `openapi-typescript` 7.13.0. 319 packages installed by `npm ci` (225 top-level folders), about 213 MB in `node_modules/`.
+
+Why these pins (checked against the npm registry on 2026-11-11):
+- TypeScript is pinned to 6.0.3 because the latest `typescript-eslint` accepts TypeScript below 6.1
+  (the newest TypeScript is 7.0.2).
+- jsdom is pinned to 29.x because jsdom 30 needs Node 22.22.2 or newer and this Mac has 22.16.0.
+- `@types/node` is on the 22 line to match the Node runtime.
+- `openapi-typescript` 7.13.0 declares a peer of `typescript ^5.x`. A package.json `overrides` entry
+  lets it use TypeScript 6.0.3. That is a declared-range mismatch we worked around, not a tested
+  guarantee; the generated `schema.d.ts` compiles with `tsc` and the frontend tests and build pass.
+- `eslint-plugin-jsx-a11y` was not added: its latest version declares support for ESLint up to 9, and
+  this project uses ESLint 10. Accessibility is covered by labelled markup, `axe-core` in the tests
+  and a manual keyboard check instead.
+- Installing used the npm cache in a scratch folder, deleted afterwards (the cache was 230 MB per
+  stage and would have pushed free disk close to the 7 GiB guard).
+
 ## Commands
 
 ```
@@ -78,6 +102,9 @@ make setup    # install everything into .venv (uv sync --all-packages)
 make lint     # Ruff checks, no changes
 make format   # Ruff auto-fix and format
 make test     # run the test suite (about 5-6 minutes on the M1 with the model tests)
+make frontend-install  # npm ci in frontend/
+make frontend-check    # frontend format check, lint, type-check, tests, build
+make api-contract      # re-export frontend/openapi.json and regenerate the TypeScript types
 ```
 
 ## Related files

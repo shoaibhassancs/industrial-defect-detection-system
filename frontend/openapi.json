@@ -1,0 +1,635 @@
+{
+  "components": {
+    "schemas": {
+      "Body_create_inspection_api_v1_inspections_post": {
+        "properties": {
+          "category": {
+            "description": "Category id, e.g. 'bottle'",
+            "title": "Category",
+            "type": "string"
+          },
+          "file": {
+            "contentMediaType": "application/octet-stream",
+            "description": "A JPEG or PNG image",
+            "title": "File",
+            "type": "string"
+          },
+          "sample_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Reserved; ignored in Release 1",
+            "title": "Sample Id"
+          },
+          "save": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Reserved; nothing is stored",
+            "title": "Save"
+          }
+        },
+        "required": [
+          "category",
+          "file"
+        ],
+        "title": "Body_create_inspection_api_v1_inspections_post",
+        "type": "object"
+      },
+      "CalibrationRank": {
+        "properties": {
+          "of_calibration_normals": {
+            "title": "Of Calibration Normals",
+            "type": "integer"
+          },
+          "score_higher_than": {
+            "title": "Score Higher Than",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "score_higher_than",
+          "of_calibration_normals"
+        ],
+        "title": "CalibrationRank",
+        "type": "object"
+      },
+      "CategoryInfo": {
+        "description": "One supported category (``GET /api/v1/categories``).",
+        "properties": {
+          "alpha": {
+            "title": "Alpha",
+            "type": "number"
+          },
+          "calib_n": {
+            "title": "Calib N",
+            "type": "integer"
+          },
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "metrics_summary": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metrics Summary"
+          },
+          "threshold": {
+            "title": "Threshold",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "display_name",
+          "kind",
+          "threshold",
+          "alpha",
+          "calib_n",
+          "metrics_summary"
+        ],
+        "title": "CategoryInfo",
+        "type": "object"
+      },
+      "ErrorBody": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "details": {
+            "additionalProperties": true,
+            "title": "Details",
+            "type": "object"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "details",
+          "request_id"
+        ],
+        "title": "ErrorBody",
+        "type": "object"
+      },
+      "ErrorEnvelope": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorBody"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "title": "ErrorEnvelope",
+        "type": "object"
+      },
+      "ImageRef": {
+        "properties": {
+          "height": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Height"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "width": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "title": "ImageRef",
+        "type": "object"
+      },
+      "Images": {
+        "properties": {
+          "heatmap": {
+            "$ref": "#/components/schemas/ImageRef"
+          },
+          "original": {
+            "$ref": "#/components/schemas/ImageRef"
+          },
+          "overlay": {
+            "$ref": "#/components/schemas/ImageRef"
+          }
+        },
+        "required": [
+          "original",
+          "heatmap",
+          "overlay"
+        ],
+        "title": "Images",
+        "type": "object"
+      },
+      "InspectionResponse": {
+        "properties": {
+          "anomaly_score": {
+            "title": "Anomaly Score",
+            "type": "number"
+          },
+          "calibration_rank": {
+            "$ref": "#/components/schemas/CalibrationRank"
+          },
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "decision_rule": {
+            "title": "Decision Rule",
+            "type": "string"
+          },
+          "disclaimer": {
+            "title": "Disclaimer",
+            "type": "string"
+          },
+          "highlighted_area_fraction": {
+            "title": "Highlighted Area Fraction",
+            "type": "number"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "images": {
+            "$ref": "#/components/schemas/Images"
+          },
+          "limitation": {
+            "title": "Limitation",
+            "type": "string"
+          },
+          "model": {
+            "$ref": "#/components/schemas/ModelRef"
+          },
+          "persisted": {
+            "title": "Persisted",
+            "type": "boolean"
+          },
+          "prediction": {
+            "title": "Prediction",
+            "type": "string"
+          },
+          "region_bbox": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region Bbox"
+          },
+          "threshold": {
+            "title": "Threshold",
+            "type": "number"
+          },
+          "timing_ms": {
+            "$ref": "#/components/schemas/TimingMs"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "category",
+          "model",
+          "prediction",
+          "decision_rule",
+          "anomaly_score",
+          "threshold",
+          "calibration_rank",
+          "highlighted_area_fraction",
+          "region_bbox",
+          "images",
+          "timing_ms",
+          "persisted",
+          "warnings",
+          "limitation",
+          "disclaimer"
+        ],
+        "title": "InspectionResponse",
+        "type": "object"
+      },
+      "ModelRef": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "version"
+        ],
+        "title": "ModelRef",
+        "type": "object"
+      },
+      "TimingMs": {
+        "properties": {
+          "inference": {
+            "title": "Inference",
+            "type": "number"
+          },
+          "total": {
+            "title": "Total",
+            "type": "number"
+          }
+        },
+        "required": [
+          "inference",
+          "total"
+        ],
+        "title": "TimingMs",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Educational anomaly-detection demo on MVTec AD. Results are demo decisions, not quality certifications; scores are not probabilities.",
+    "title": "DefectLens API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/categories": {
+      "get": {
+        "description": "Supported categories with their calibration and a short evaluation summary.",
+        "operationId": "categories_api_v1_categories_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryInfo"
+                  },
+                  "title": "Response Categories Api V1 Categories Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not ready or busy (MODEL_NOT_READY, BUSY); see the Retry-After header"
+          }
+        },
+        "summary": "Categories",
+        "tags": [
+          "model"
+        ]
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "description": "Liveness: 200 as soon as the process is up.",
+        "operationId": "health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Health Api V1 Health Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/api/v1/inspections": {
+      "post": {
+        "operationId": "create_inspection_api_v1_inspections_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_create_inspection_api_v1_inspections_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Upload too large (FILE_TOO_LARGE)"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not a JPEG or PNG (UNSUPPORTED_MEDIA_TYPE)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Invalid request or image (VALIDATION_ERROR, UNSUPPORTED_CATEGORY, INVALID_IMAGE, IMAGE_DIMENSIONS)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Rate limited (RATE_LIMITED); see the Retry-After header"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Server error (INFERENCE_FAILED, INTERNAL_ERROR)"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not ready or busy (MODEL_NOT_READY, BUSY); see the Retry-After header"
+          }
+        },
+        "summary": "Create Inspection",
+        "tags": [
+          "inspections"
+        ]
+      }
+    },
+    "/api/v1/metrics/{category}": {
+      "get": {
+        "description": "Sealed-evaluation results for a category (from files checked against the package).",
+        "operationId": "metrics_api_v1_metrics__category__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "category",
+            "required": true,
+            "schema": {
+              "title": "Category",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Metrics Api V1 Metrics  Category  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Invalid request or image (VALIDATION_ERROR, UNSUPPORTED_CATEGORY, INVALID_IMAGE, IMAGE_DIMENSIONS)"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not ready or busy (MODEL_NOT_READY, BUSY); see the Retry-After header"
+          }
+        },
+        "summary": "Metrics",
+        "tags": [
+          "model"
+        ]
+      }
+    },
+    "/api/v1/model": {
+      "get": {
+        "description": "What the model is, how it was calibrated, and what it can not do.",
+        "operationId": "model_api_v1_model_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Model Api V1 Model Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not ready or busy (MODEL_NOT_READY, BUSY); see the Retry-After header"
+          }
+        },
+        "summary": "Model",
+        "tags": [
+          "model"
+        ]
+      }
+    },
+    "/api/v1/ready": {
+      "get": {
+        "description": "200 only after the model is loaded, verified and warmed up; otherwise 503.",
+        "operationId": "ready_api_v1_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Ready",
+        "tags": [
+          "health"
+        ]
+      }
+    }
+  }
+}
